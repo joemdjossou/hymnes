@@ -1,20 +1,18 @@
-import 'package:flutter/foundation.dart';
 import 'package:hymnes/Screens/HomeInput.dart';
-import 'package:intro_slider/dot_animation_enum.dart';
+import 'package:hymnes/components/Slide.dart';
 import 'package:intro_slider/intro_slider.dart';
-import 'package:intro_slider/slide_object.dart';
 import 'package:flutter/material.dart';
 // import 'Accueil.dart';
 
 class IntroScreen extends StatefulWidget {
-  IntroScreen({Key key}) : super(key: key);
+  IntroScreen({Key? key}) : super(key: key);
 
   @override
   IntroScreenState createState() => new IntroScreenState();
 }
 
 class IntroScreenState extends State<IntroScreen> {
-  List<Slide> slides = new List();
+  List<Slide> slides = [];
 
   @override
   void initState() {
@@ -58,7 +56,7 @@ class IntroScreenState extends State<IntroScreen> {
   Widget build(BuildContext context) {
     return new IntroSlider(
       // List slides
-      slides: this.slides,
+      listCustomTabs: this.slides.map((slide) => slide.toWidget()).toList(),
       // // Dot indicator
       // colorDot: Color(0xffffcc5c),
       // sizeDot: 13.0,

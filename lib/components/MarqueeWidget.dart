@@ -6,11 +6,11 @@ class MarqueeWidget extends StatefulWidget {
   final Duration animationDuration, backDuration, pauseDuration;
 
   MarqueeWidget({
-    @required this.child,
-    this.direction: Axis.horizontal,
-    this.animationDuration: const Duration(milliseconds: 3000),
-    this.backDuration: const Duration(milliseconds: 800),
-    this.pauseDuration: const Duration(milliseconds: 800),
+    required this.child,
+    this.direction = Axis.horizontal,
+    this.animationDuration = const Duration(milliseconds: 3000),
+    this.backDuration = const Duration(milliseconds: 800),
+    this.pauseDuration = const Duration(milliseconds: 800),
   });
 
   @override
@@ -18,7 +18,7 @@ class MarqueeWidget extends StatefulWidget {
 }
 
 class _MarqueeWidgetState extends State<MarqueeWidget> {
-  ScrollController scrollController;
+  ScrollController? scrollController;
 
   @override
   void initState() {
@@ -28,8 +28,8 @@ class _MarqueeWidgetState extends State<MarqueeWidget> {
   }
 
   @override
-  void dispose(){
-    scrollController.dispose();
+  void dispose() {
+    scrollController!.dispose();
     super.dispose();
   }
 
@@ -43,17 +43,17 @@ class _MarqueeWidgetState extends State<MarqueeWidget> {
   }
 
   void scroll(_) async {
-    while (scrollController.hasClients) {
-        await Future.delayed(widget.pauseDuration);
-        if(scrollController.hasClients)
-          await scrollController.animateTo(
-              scrollController.position.maxScrollExtent,
-              duration: widget.animationDuration,
-              curve: Curves.ease);
-        await Future.delayed(widget.pauseDuration);
-        if(scrollController.hasClients)
-          await scrollController.animateTo(0.0,
-              duration: widget.backDuration, curve: Curves.easeOut);
+    while (scrollController!.hasClients) {
+      await Future.delayed(widget.pauseDuration);
+      if (scrollController!.hasClients)
+        await scrollController!.animateTo(
+            scrollController!.position.maxScrollExtent,
+            duration: widget.animationDuration,
+            curve: Curves.ease);
+      await Future.delayed(widget.pauseDuration);
+      if (scrollController!.hasClients)
+        await scrollController!.animateTo(0.0,
+            duration: widget.backDuration, curve: Curves.easeOut);
     }
   }
 }
