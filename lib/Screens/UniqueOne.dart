@@ -1,20 +1,13 @@
-import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:hymnes/components/MarqueeWidget.dart';
 import 'package:provider/provider.dart';
-
 import '../HymnesBrain.dart';
-
-// import 'package:audioplayers/audioplayers.dart';
-// import 'package:audioplayers/audio_cache.dart';
 
 const _PANEL_HEADER_HEIGHT = 40.0;
 
 class UniqueOne extends StatefulWidget {
-  final int numero;
+  final int? numero;
   UniqueOne({this.numero});
   @override
   _UniqueOneState createState() => _UniqueOneState();
@@ -23,10 +16,10 @@ class UniqueOne extends StatefulWidget {
 class _UniqueOneState extends State<UniqueOne>
     with SingleTickerProviderStateMixin {
   static AudioPlayer player = new AudioPlayer();
-  AudioCache localTo = new AudioCache(fixedPlayer: player);
-  //HymnesBrain brain = HymnesBrain();
+  AudioCache localTo = new AudioCache(/*fixedPlayer: player*/);
+  // HymnesBrain brain = HymnesBrain();
   String voix = 'soprano';
-  AnimationController _controller;
+  AnimationController? _controller;
   bool favoris = false;
   bool playing = false;
   bool stopped = true;
@@ -41,17 +34,20 @@ class _UniqueOneState extends State<UniqueOne>
     print('bhbgvgvg');
     super.initState();
     _controller = new AnimationController(
-        duration: const Duration(milliseconds: 100), value: 0.0, vsync: this);
+      duration: const Duration(milliseconds: 100),
+      value: 0.0,
+      vsync: this,
+    );
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
+    _controller!.dispose();
   }
 
   bool get _isPanelVisible {
-    final AnimationStatus status = _controller.status;
+    final AnimationStatus status = _controller!.status;
     return status == AnimationStatus.completed ||
         status == AnimationStatus.forward;
   }
@@ -60,16 +56,12 @@ class _UniqueOneState extends State<UniqueOne>
     switch (voix) {
       case 'soprano':
         return 'alto';
-        break;
       case 'alto':
         return 'tenor';
-        break;
       case 'tenor':
         return 'basse';
-        break;
       case 'basse':
         return 'soprano';
-        break;
       default:
         return 'basse';
     }
@@ -79,16 +71,12 @@ class _UniqueOneState extends State<UniqueOne>
     switch (voix) {
       case 'soprano':
         return 'S';
-        break;
       case 'alto':
         return 'A';
-        break;
       case 'tenor':
         return 'T';
-        break;
       case 'basse':
         return 'B';
-        break;
       default:
         return 'B';
     }
@@ -144,7 +132,7 @@ class _UniqueOneState extends State<UniqueOne>
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
     final Animation<RelativeRect> animation = _getPanelAnimation(constraints);
-    final ThemeData theme = Theme.of(context);
+    Theme.of(context);
     return Consumer<HymnesBrain>(builder: (context, brain, child) {
       return (new Container(
         color: Colors.lime[100],
@@ -166,10 +154,10 @@ class _UniqueOneState extends State<UniqueOne>
                 // Note: Sensitivity is integer used when you don't want to mess up vertical drag
                 if (details.delta.dx > 0) {
                   print('Right Swipe');
-                  rightNavigate(brain, widget.numero -1);
+                  rightNavigate(brain, widget.numero! - 1);
                 } else if (details.delta.dx < 0) {
                   print('left swipe');
-                  leftNavigate(brain, widget.numero -1);
+                  leftNavigate(brain, widget.numero! - 1);
                 }
               },
               child: SingleChildScrollView(
@@ -177,7 +165,7 @@ class _UniqueOneState extends State<UniqueOne>
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 40.0),
                     child: new Text(
-                      brain.getHymneChant(widget.numero - 1),
+                      brain.getHymneChant(widget.numero! - 1),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: _fontSize,
@@ -199,7 +187,8 @@ class _UniqueOneState extends State<UniqueOne>
                 child: new Column(children: <Widget>[
                   GestureDetector(
                     onTap: () {
-                      _controller.fling(velocity: _isPanelVisible ? -1.0 : 1.0);
+                      _controller!
+                          .fling(velocity: _isPanelVisible ? -1.0 : 1.0);
                     },
                     child: new Container(
                       height: _PANEL_HEADER_HEIGHT,
@@ -219,12 +208,12 @@ class _UniqueOneState extends State<UniqueOne>
                           child: Center(
                             child: new IconButton(
                               onPressed: () {
-                                _controller.fling(
+                                _controller!.fling(
                                     velocity: _isPanelVisible ? -1.0 : 1.0);
                               },
                               icon: new AnimatedIcon(
                                 icon: AnimatedIcons.add_event,
-                                progress: _controller.view,
+                                progress: _controller!.view,
                               ),
                             ),
                           ),
@@ -238,7 +227,7 @@ class _UniqueOneState extends State<UniqueOne>
                         child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: new Text(
-                        brain.getHymneHistoire(widget.numero - 1),
+                        brain.getHymneHistoire(widget.numero! - 1),
                         textAlign: TextAlign.justify,
                         style: TextStyle(
                           fontFamily: 'Raleway',
@@ -263,7 +252,7 @@ class _UniqueOneState extends State<UniqueOne>
     return new RelativeRectTween(
       begin: new RelativeRect.fromLTRB(0.0, top, 0.0, bottom),
       end: new RelativeRect.fromLTRB(0.0, 0.0, 0.0, 0.0),
-    ).animate(new CurvedAnimation(parent: _controller, curve: Curves.linear));
+    ).animate(new CurvedAnimation(parent: _controller!, curve: Curves.linear));
   }
 
   @override
@@ -275,7 +264,7 @@ class _UniqueOneState extends State<UniqueOne>
           title: MarqueeWidget(
             direction: Axis.horizontal,
             child: new Text(
-              brain.getHymneTitre(widget.numero - 1),
+              brain.getHymneTitre(widget.numero! - 1),
               style: TextStyle(
                 fontFamily: 'Raleway',
                 fontWeight: FontWeight.w800,
@@ -304,8 +293,9 @@ class _UniqueOneState extends State<UniqueOne>
                     stopped = false;
                   });
                   print('playing $voix');
-                  await localTo.play(
-                      brain.getHymneAudio(widget.numero - 1, voix) + '.mp3');
+                  // await localTo.play(
+                  //   brain.getHymneAudio(widget.numero! - 1, voix) + '.mp3',
+                  // );
                 }
               },
             ),

@@ -3,22 +3,19 @@
 // found in the LICENSE file.
 
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
-
 import 'package:hymnes/category.dart';
 
 const double _kFlingVelocity = 2.0;
 
 class _BackdropPanel extends StatelessWidget {
   const _BackdropPanel({
-    Key key,
-    this.onTap,
-    this.onVerticalDragUpdate,
-    this.onVerticalDragEnd,
-    this.title,
-    this.child,
+    Key? key,
+    required this.onTap,
+    required this.onVerticalDragUpdate,
+    required this.onVerticalDragEnd,
+    required this.title,
+    required this.child,
   }) : super(key: key);
 
   final VoidCallback onTap;
@@ -48,7 +45,7 @@ class _BackdropPanel extends StatelessWidget {
               padding: EdgeInsetsDirectional.only(start: 16.0),
               alignment: AlignmentDirectional.centerStart,
               child: DefaultTextStyle(
-                style: Theme.of(context).textTheme.subhead,
+                style: Theme.of(context).textTheme.displayMedium!,
                 child: title,
               ),
             ),
@@ -70,17 +67,17 @@ class _BackdropTitle extends AnimatedWidget {
   final Widget backTitle;
 
   const _BackdropTitle({
-    Key key,
-    Listenable listenable,
-    this.frontTitle,
-    this.backTitle,
+    Key? key,
+    required Animation<double> listenable,
+    required this.frontTitle,
+    required this.backTitle,
   }) : super(key: key, listenable: listenable);
 
   @override
   Widget build(BuildContext context) {
-    final Animation<double> animation = this.listenable;
+    final Listenable animation = listenable;
     return DefaultTextStyle(
-      style: Theme.of(context).primaryTextTheme.title,
+      style: Theme.of(context).primaryTextTheme.headlineMedium!,
       softWrap: false,
       overflow: TextOverflow.ellipsis,
       // Here, we do a custom cross fade between backTitle and frontTitle.
@@ -89,7 +86,7 @@ class _BackdropTitle extends AnimatedWidget {
         children: <Widget>[
           Opacity(
             opacity: CurvedAnimation(
-              parent: ReverseAnimation(animation),
+              parent: ReverseAnimation(animation as Animation<double>),
               curve: Interval(0.5, 1.0),
             ).value,
             child: backTitle,
@@ -121,16 +118,12 @@ class Backdrop extends StatefulWidget {
   final Widget backTitle;
 
   const Backdrop({
-    @required this.currentCategory,
-    @required this.frontPanel,
-    @required this.backPanel,
-    @required this.frontTitle,
-    @required this.backTitle,
-  })  : assert(currentCategory != null),
-        assert(frontPanel != null),
-        assert(backPanel != null),
-        assert(frontTitle != null),
-        assert(backTitle != null);
+    required this.currentCategory,
+    required this.frontPanel,
+    required this.backPanel,
+    required this.frontTitle,
+    required this.backTitle,
+  });
 
   @override
   _BackdropState createState() => _BackdropState();
@@ -139,7 +132,7 @@ class Backdrop extends StatefulWidget {
 class _BackdropState extends State<Backdrop>
     with SingleTickerProviderStateMixin {
   final GlobalKey _backdropKey = GlobalKey(debugLabel: 'Backdrop');
-  AnimationController _controller;
+  AnimationController? _controller;
 
   @override
   void initState() {
@@ -159,64 +152,65 @@ class _BackdropState extends State<Backdrop>
     super.didUpdateWidget(old);
     if (widget.currentCategory != old.currentCategory) {
       setState(() {
-        _controller.fling(
+        _controller!.fling(
             velocity:
                 _backdropPanelVisible ? -_kFlingVelocity : _kFlingVelocity);
       });
     } else if (!_backdropPanelVisible) {
       setState(() {
-        _controller.fling(velocity: _kFlingVelocity);
+        _controller!.fling(velocity: _kFlingVelocity);
       });
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
   bool get _backdropPanelVisible {
-    final AnimationStatus status = _controller.status;
+    final AnimationStatus status = _controller!.status;
     return status == AnimationStatus.completed ||
         status == AnimationStatus.forward;
   }
 
   void _toggleBackdropPanelVisibility() {
     FocusScope.of(context).requestFocus(FocusNode());
-    _controller.fling(
+    _controller!.fling(
         velocity: _backdropPanelVisible ? -_kFlingVelocity : _kFlingVelocity);
   }
 
   double get _backdropHeight {
-    final RenderBox renderBox = _backdropKey.currentContext.findRenderObject();
-    return renderBox.size.height;
+    final RenderObject? renderBox =
+        _backdropKey.currentContext!.findRenderObject();
+    return renderBox!.paintBounds.size.height;
   }
 
   // By design: the panel can only be opened with a swipe. To close the panel
   // the user must either tap its heading or the backdrop's menu icon.
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    if (_controller.isAnimating ||
-        _controller.status == AnimationStatus.completed) return;
+    if (_controller!.isAnimating ||
+        _controller!.status == AnimationStatus.completed) return;
 
-    _controller.value -= details.primaryDelta / _backdropHeight;
+    _controller!.value -= details.primaryDelta! / _backdropHeight;
   }
 
   void _handleDragEnd(DragEndDetails details) {
-    if (_controller.isAnimating ||
-        _controller.status == AnimationStatus.completed) return;
+    if (_controller!.isAnimating ||
+        _controller!.status == AnimationStatus.completed) return;
 
     final double flingVelocity =
         details.velocity.pixelsPerSecond.dy / _backdropHeight;
     if (flingVelocity < 0.0)
-      _controller.fling(velocity: math.max(_kFlingVelocity, -flingVelocity));
+      _controller!.fling(velocity: math.max(_kFlingVelocity, -flingVelocity));
     else if (flingVelocity > 0.0)
-      _controller.fling(velocity: math.min(-_kFlingVelocity, -flingVelocity));
+      _controller!.fling(velocity: math.min(-_kFlingVelocity, -flingVelocity));
     else
-      _controller.fling(
+      _controller!.fling(
           velocity:
-              _controller.value < 0.5 ? -_kFlingVelocity : _kFlingVelocity);
+              _controller!.value < 0.5 ? -_kFlingVelocity : _kFlingVelocity);
   }
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
@@ -228,7 +222,7 @@ class _BackdropState extends State<Backdrop>
       begin: RelativeRect.fromLTRB(
           0.0, panelTop, 0.0, panelTop - panelSize.height),
       end: RelativeRect.fromLTRB(0.0, 0.0, 0.0, 0.0),
-    ).animate(_controller.view);
+    ).animate(_controller!.view);
 
     return Container(
       key: _backdropKey,
@@ -261,11 +255,11 @@ class _BackdropState extends State<Backdrop>
           onPressed: _toggleBackdropPanelVisibility,
           icon: AnimatedIcon(
             icon: AnimatedIcons.close_menu,
-            progress: _controller.view,
+            progress: _controller!.view,
           ),
         ),
         title: _BackdropTitle(
-          listenable: _controller.view,
+          listenable: _controller!.view,
           frontTitle: widget.frontTitle,
           backTitle: widget.backTitle,
         ),

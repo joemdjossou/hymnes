@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:hymnes/Screens/UniqueOne.dart';
-
 import '../HymnesBrain.dart';
 
 class HomeInput extends StatefulWidget {
@@ -11,7 +8,7 @@ class HomeInput extends StatefulWidget {
 }
 
 class _HomeInputState extends State<HomeInput> {
-  FocusNode myFocusNode;
+  late FocusNode myFocusNode;
   bool isTextSearch = false;
   final controller = TextEditingController();
   HymnesBrain brain = new HymnesBrain();
@@ -124,7 +121,7 @@ class _HomeInputState extends State<HomeInput> {
               context,
               MaterialPageRoute(
                 builder: (context) => UniqueOne(
-                  numero: int.parse(_searchResult[idx].number),
+                  numero: int.parse(_searchResult[idx].number!),
                 ),
               ));
         },
@@ -145,7 +142,7 @@ class _HomeInputState extends State<HomeInput> {
                         color: Colors.white,
                         borderRadius: BorderRadius.all(Radius.circular(20.0))),
                     child: Center(
-                      child: Text(_searchResult[idx].number),
+                      child: Text(_searchResult[idx].number!),
                     ),
                   ),
                 ),
@@ -159,7 +156,7 @@ class _HomeInputState extends State<HomeInput> {
                       children: <Widget>[
                         // titre de l'hymne
                         Text(
-                          _searchResult[idx].titre,
+                          _searchResult[idx].titre!,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(
@@ -173,14 +170,14 @@ class _HomeInputState extends State<HomeInput> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              _searchResult[idx].auteur,
+                              _searchResult[idx].auteur!,
                               style: TextStyle(
                                 fontFamily: 'Raleway',
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                             Text(
-                              _searchResult[idx].style,
+                              _searchResult[idx].style!,
                               style: TextStyle(
                                 fontFamily: 'Raleway',
                               ),
@@ -251,7 +248,7 @@ class _HomeInputState extends State<HomeInput> {
               ),
               boxShadow: [
                 new BoxShadow(
-                  color: Colors.grey[500],
+                  color: Colors.grey[500]!,
                   blurRadius: 20.0,
                   spreadRadius: 1.0,
                 )
@@ -277,7 +274,7 @@ class _HomeInputState extends State<HomeInput> {
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.grey,
                         spreadRadius: 1,
                         blurRadius: 7,
                         offset: Offset(0, 1), // changes position of shadow
@@ -376,10 +373,10 @@ class _HomeInputState extends State<HomeInput> {
     }
     brain.hymnes.forEach((userDetail) {
       if (isTextSearch) {
-        if (userDetail.titre.contains(text) || userDetail.chant.contains(text))
-          _searchResult.add(userDetail);
+        if (userDetail.titre!.contains(text) ||
+            userDetail.chant!.contains(text)) _searchResult.add(userDetail);
       } else {
-        if (userDetail.number.contains(text)) _searchResult.add(userDetail);
+        if (userDetail.number!.contains(text)) _searchResult.add(userDetail);
         // print('recherche numerique : $text');
       }
     });
