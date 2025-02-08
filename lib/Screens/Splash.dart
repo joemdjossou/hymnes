@@ -16,18 +16,15 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
-
   Future checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool _seen = (prefs.getBool('seen')?? false);
+    bool _seen = (prefs.getBool('seen') ?? false);
     //prefs.setStringList('favoris', List<String>());MyHomePage('Accueil')
 
-
-    if(_seen){
+    if (_seen) {
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomeInput()));
-    }
-    else {
+          MaterialPageRoute(builder: (context) => IntroScreen()));
+    } else {
       await prefs.setBool('seen', true);
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => IntroScreen()));
@@ -35,9 +32,9 @@ class _SplashState extends State<Splash> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    new Timer(new Duration(milliseconds: 2000), (){
+    new Timer(new Duration(milliseconds: 2000), () {
       checkFirstSeen();
     });
   }
@@ -45,10 +42,19 @@ class _SplashState extends State<Splash> {
   @override
   Widget build(BuildContext context) {
     return Material(
-          child: Container(child: Container(
-        color: Colors.teal[800],
-        child: Center(child: Expanded(child: Text("Louanges à Dieu !", softWrap:true, textAlign: TextAlign.center, style: TextStyle(color: Colors.white) )),),
-      ),),
+      child: Container(
+        child: Container(
+          color: Colors.teal[800],
+          child: Center(
+            child: Text(
+              "Louanges à Dieu !",
+              softWrap: true,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

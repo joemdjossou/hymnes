@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:hymnes/components/MarqueeWidget.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../HymnesBrain.dart';
 
 const _PANEL_HEADER_HEIGHT = 40.0;
@@ -15,8 +16,18 @@ class UniqueOne extends StatefulWidget {
 
 class _UniqueOneState extends State<UniqueOne>
     with SingleTickerProviderStateMixin {
-  static AudioPlayer player = new AudioPlayer();
-  AudioCache localTo = new AudioCache(/*fixedPlayer: player*/);
+  static AudioPlayer player = AudioPlayer();
+
+  Future<void> playAudio(String path) async {
+    try {
+      await player.play(AssetSource(path),
+          volume: 8); // Use AssetSource for local files
+      await player.resume(); // Play the audio
+    } catch (e) {
+      print('Error playing audio: $e');
+    }
+  }
+
   // HymnesBrain brain = HymnesBrain();
   String voix = 'soprano';
   AnimationController? _controller;
@@ -29,21 +40,42 @@ class _UniqueOneState extends State<UniqueOne>
   final double _baseFontSize = 16;
   double _fontScale = 1;
   double _baseFontScale = 1;
+  late List<String> favorisListCustom;
+
   @override
-  initState() {
-    print('bhbgvgvg');
+  void initState() {
     super.initState();
-    _controller = new AnimationController(
+    _initializeFavorites(); // Call the async method
+    _controller = AnimationController(
       duration: const Duration(milliseconds: 100),
       value: 0.0,
       vsync: this,
     );
   }
 
+  void _initializeFavorites() async {
+    await HymnesBrain().addAllTheFavorites();
+    favorisListCustom = await HymnesBrain().addAllTheFavorites() ?? ['null'];
+    print('voici la liste $favorisListCustom');
+    // print('Into the hymnal screen');
+  }
+
+  void addOrRemoveFavorite(int hymneNumber) async {
+    // Convert hymneNumber to string for comparison
+    String hymneStr = hymneNumber.toString();
+    // Remove any existing occurrences of hymneNumber to avoid duplicates
+    if (favorisListCustom.contains(hymneStr)) {
+      favorisListCustom.remove(hymneStr);
+    } else {
+      favorisListCustom.add(hymneStr);
+    }
+  }
+
   @override
   void dispose() {
+    // player.dispose(); // Properly dispose of the player
+    _controller?.dispose();
     super.dispose();
-    _controller!.dispose();
   }
 
   bool get _isPanelVisible {
@@ -151,27 +183,55 @@ class _UniqueOneState extends State<UniqueOne>
                 });
               },
               onHorizontalDragUpdate: (details) {
-                // Note: Sensitivity is integer used when you don't want to mess up vertical drag
+                // Right Swipe
                 if (details.delta.dx > 0) {
-                  print('Right Swipe');
-                  rightNavigate(brain, widget.numero! - 1);
-                } else if (details.delta.dx < 0) {
-                  print('left swipe');
-                  leftNavigate(brain, widget.numero! - 1);
+                  if (widget.numero! > 1) {
+                    // Prevent accessing negative index
+                    print('Right Swipe');
+                    rightNavigate(brain, widget.numero! - 1);
+                  } else {
+                    print('Swipe Blocked at Index 0');
+                  }
+                }
+                // Left Swipe
+                else if (details.delta.dx < 0) {
+                  if (widget.numero! < 655) {
+                    // Prevent out-of-range access
+                    print('Left Swipe');
+                    leftNavigate(brain, widget.numero! - 1);
+                  } else {
+                    print('Swipe Blocked at Last Index');
+                  }
                 }
               },
               child: SingleChildScrollView(
                 child: new Center(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 40.0),
-                    child: new Text(
-                      brain.getHymneChant(widget.numero! - 1),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: _fontSize,
-                        fontFamily: 'Raleway',
-                        fontWeight: FontWeight.w800,
-                      ),
+                    child: Column(
+                      children: [
+                        new Text(
+                          brain.getHymneChant(widget.numero! - 1),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: _fontSize,
+                            fontFamily: 'Raleway',
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        new Text(
+                          brain.getHymneAuteur(widget.numero! - 1),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: _fontSize,
+                            fontFamily: 'Raleway',
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -194,15 +254,17 @@ class _UniqueOneState extends State<UniqueOne>
                       height: _PANEL_HEADER_HEIGHT,
                       child: Row(children: <Widget>[
                         Expanded(
-                            flex: 7,
-                            child: Center(
-                                child: new Text(
+                          flex: 7,
+                          child: Center(
+                            child: new Text(
                               "Histoire",
                               style: TextStyle(
                                 fontFamily: 'Raleway',
                                 fontWeight: FontWeight.w700,
                               ),
-                            ))),
+                            ),
+                          ),
+                        ),
                         Expanded(
                           flex: 3,
                           child: Center(
@@ -212,7 +274,7 @@ class _UniqueOneState extends State<UniqueOne>
                                     velocity: _isPanelVisible ? -1.0 : 1.0);
                               },
                               icon: new AnimatedIcon(
-                                icon: AnimatedIcons.add_event,
+                                icon: AnimatedIcons.menu_arrow,
                                 progress: _controller!.view,
                               ),
                             ),
@@ -226,13 +288,33 @@ class _UniqueOneState extends State<UniqueOne>
                     child: new Center(
                         child: Padding(
                       padding: const EdgeInsets.all(10.0),
-                      child: new Text(
-                        brain.getHymneHistoire(widget.numero! - 1),
-                        textAlign: TextAlign.justify,
-                        style: TextStyle(
-                          fontFamily: 'Raleway',
-                          fontWeight: FontWeight.w800,
-                        ),
+                      child: Column(
+                        children: [
+                          new Text(
+                            brain.getHymneAuteur(widget.numero! - 1),
+                            textAlign: TextAlign.justify,
+                            style: TextStyle(
+                              fontFamily: 'Raleway',
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          new Text(
+                            brain.getHymneStyle(widget.numero! - 1),
+                            textAlign: TextAlign.justify,
+                            style: TextStyle(
+                              fontFamily: 'Raleway',
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          new Text(
+                            brain.getHymneHistoire(widget.numero! - 1),
+                            textAlign: TextAlign.justify,
+                            style: TextStyle(
+                              fontFamily: 'Raleway',
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
                       ),
                     )),
                   ))
@@ -263,12 +345,27 @@ class _UniqueOneState extends State<UniqueOne>
           elevation: 0.0,
           title: MarqueeWidget(
             direction: Axis.horizontal,
-            child: new Text(
-              brain.getHymneTitre(widget.numero! - 1),
-              style: TextStyle(
-                fontFamily: 'Raleway',
-                fontWeight: FontWeight.w800,
-              ),
+            child: Row(
+              children: [
+                new Text(
+                  brain.getHymneNumber(widget.numero! - 1),
+                  style: TextStyle(
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w800,
+                    fontSize: 25.0,
+                  ),
+                ),
+                SizedBox(
+                  width: 10.0,
+                ),
+                new Text(
+                  brain.getHymneTitre(widget.numero! - 1),
+                  style: TextStyle(
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
             ),
           ),
           actions: <Widget>[
@@ -284,7 +381,7 @@ class _UniqueOneState extends State<UniqueOne>
                     paused = true;
                     stopped = false;
                   });
-                  print('pausing $voix');
+                  print('Pausing $voix');
                   await player.pause();
                 } else {
                   setState(() {
@@ -292,10 +389,12 @@ class _UniqueOneState extends State<UniqueOne>
                     paused = false;
                     stopped = false;
                   });
-                  print('playing $voix');
-                  // await localTo.play(
-                  //   brain.getHymneAudio(widget.numero! - 1, voix) + '.mp3',
-                  // );
+                  print('Playing $voix');
+                  String audioPath = 'audio/' +
+                      brain.getHymneAudio(widget.numero! - 1, voix) +
+                      '.mp3';
+                  print('Attempting to play audio at: $audioPath');
+                  await playAudio(audioPath);
                 }
               },
             ),
@@ -316,14 +415,24 @@ class _UniqueOneState extends State<UniqueOne>
               itemBuilder: (BuildContext context) {
                 return [
                   PopupMenuItem(
+                    onTap: () {
+                      brain.setHymneFavoris(widget.numero!);
+                      addOrRemoveFavorite(widget.numero!);
+                      print('chanson bien ajoute aux favoris ');
+                      print('Log: is favoris ${brain.favoris ?? null}');
+                      print(
+                          'Log: is favoris ${favorisListCustom.contains(widget.numero.toString())}');
+                    },
                     child: Row(
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.favorite_border),
-                          color: Colors.green,
-                          onPressed: () {
-                            print('chanson bien ajoute aux favoris ');
-                          },
+                        Icon(
+                          (favorisListCustom.contains(widget.numero.toString()))
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: Colors.teal[800],
+                        ),
+                        SizedBox(
+                          width: 10.0,
                         ),
                         Text('Aimer'),
                       ],

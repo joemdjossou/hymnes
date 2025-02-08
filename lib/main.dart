@@ -30,26 +30,24 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Hymnes & Louanges',
         routes: <String, WidgetBuilder>{
-          "/Favoris" : (BuildContext context) => new FavorisClass(),
-          "/search" : (BuildContext context) => new SearchClass(),
-          "/numeric" : (BuildContext context) => new NumericClass(),
-          "/alphabetic" : (BuildContext context) => new AlphabeticClass(),
-          "/unique" : (BuildContext context) => new UniqueLectureClass(numero: 1,),
-          "/uniqueOne" : (BuildContext context) => new UniqueOne(numero: 1,),
-          "/intro" : (BuildContext context) => new IntroScreen(),
-          "/home" : (BuildContext context) => new HomeInput(),
+          "/Favoris": (BuildContext context) => new FavorisClass(),
+          "/search": (BuildContext context) => new SearchClass(),
+          "/numeric": (BuildContext context) => new NumericClass(),
+          "/alphabetic": (BuildContext context) => new AlphabeticClass(),
+          "/unique": (BuildContext context) => new UniqueLectureClass(
+                numero: 1,
+              ),
+          "/uniqueOne": (BuildContext context) => new UniqueOne(
+                numero: 1,
+              ),
+          "/intro": (BuildContext context) => new IntroScreen(),
+          "/home": (BuildContext context) => new HomeInput(),
         },
         theme: ThemeData(
-          primarySwatch: Colors.green,
+          primarySwatch: Colors.teal,
         ),
         home: Splash(),
       ),
     );
   }
 }
-
-
-
-
-
-

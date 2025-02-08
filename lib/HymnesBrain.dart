@@ -7875,7 +7875,7 @@ class HymnesBrain extends ChangeNotifier {
   }
 
   String getHymneHistoire(int hymneNumber) {
-    return "here you find all the story";
+    return _hymnesBank[hymneNumber].histoire ?? 'Aucune histoire';
   }
 
   String getHymneTitre(int hymneNumber) {
@@ -7887,13 +7887,29 @@ class HymnesBrain extends ChangeNotifier {
     notifyListeners();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final myStringList = prefs.getStringList('favoris') ?? [];
-    if (_hymnesBank[hymneNumber].isFavoris == true) {
-      myStringList.add(hymneNumber.toString());
+    favoris = myStringList;
+    notifyListeners();
+    if (_hymnesBank[hymneNumber].isFavoris == true &&
+        !myStringList.contains(hymneNumber.toString())) {
+      myStringList
+          .add(hymneNumber.toString()); // Only add if not already in the list
     } else {
-      myStringList.remove(hymneNumber.toString());
+      myStringList
+          .remove(hymneNumber.toString()); // Remove if it's not a favorite
     }
     print(myStringList);
     prefs.setStringList('favoris', myStringList);
+    notifyListeners();
+  }
+
+  Future<List<String>?> addAllTheFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final myStringList = prefs.getStringList('favoris') ?? [];
+    favoris = myStringList;
+    notifyListeners();
+    print(favoris);
+    notifyListeners();
+    return favoris;
   }
 
   String getHymneAudio(int hymneNumber, String audio) {
@@ -7907,7 +7923,7 @@ class HymnesBrain extends ChangeNotifier {
       case 'basse':
         return _hymnesBank[hymneNumber].basse!;
       default:
-        return _hymnesBank[hymneNumber].basse!;
+        return _hymnesBank[hymneNumber].soprano!;
     }
   }
 
@@ -7916,10 +7932,10 @@ class HymnesBrain extends ChangeNotifier {
     final myStringList = prefs.getStringList('favoris') ?? [];
     print('voici la liste $myStringList');
     if (myStringList.contains(num.toString())) {
-      //print('je suis true pour le $num');
+      print('je suis true pour le $num');
       return true;
     } else {
-      //print('je suis false pour le $num');
+      print('je suis false pour le $num');
       return false;
     }
   }
@@ -7934,9 +7950,9 @@ class HymnesBrain extends ChangeNotifier {
     bool rep = false;
     checkFavoris(hymneNumber).then((bool result) {
       rep = result;
-      print('je suis $rep pour le $hymneNumber');
+      // print('je suis $rep pour le $hymneNumber');
     });
-    print('je suis au $rep 2 pour le $hymneNumber');
+    // print('je suis au $rep pour le $hymneNumber');
     return rep;
   }
 
