@@ -18,36 +18,38 @@ class IntroScreenState extends State<IntroScreen> {
   void initState() {
     super.initState();
     slides.add(
-      new Slide(
-        title: "ERASER",
+      Slide(
+        title: "Chantez avec Joie",
         description:
-            "Allow miles wound place the leave had. To sitting subject no improve studied limited",
-        pathImage: "assets/images/images.jpg",
-        backgroundColor: Color(0xfff5a623),
+            "Découvrez la beauté des cantiques qui élèvent l'âme et inspirent l'adoration.",
+        imagePath: "assets/images/images.jpg",
+        backgroundColor: Color(0xFF6A1B9A), // Deep Purple
       ),
     );
+
     slides.add(
-      new Slide(
-        title: "PENCIL",
+      Slide(
+        title: "Cantiques Intemporels",
         description:
-            "Ye indulgence unreserved connection alteration appearance",
-        pathImage: "assets/images/images.jpg",
-        backgroundColor: Color(0xff203152),
+            "Redécouvrez les cantiques classiques qui touchent les cœurs depuis des générations.",
+        imagePath: "assets/images/images.jpg",
+        backgroundColor: Color(0xFF1565C0), // Deep Blue
       ),
     );
+
     slides.add(
-      new Slide(
-        title: "RULER",
+      Slide(
+        title: "Votre Compagnon de Louange",
         description:
-            "Much evil soon high in hope do view. Out may few northward believing attempted. Yet timed being songs marry one defer men our. Although finished blessing do of",
-        pathImage: "assets/images/images.jpg",
-        backgroundColor: Color(0xff9932CC),
+            "Emportez avec vous une collection de cantiques puissants où que vous soyez.",
+        imagePath: "assets/images/images.jpg",
+        backgroundColor: Colors.teal, // Teal
       ),
     );
   }
 
   void onDonePress() {
-    print('hdhdhdhdhdhdhd');
+    print('Go to home screen');
     Navigator.of(context)
         .pushReplacement(MaterialPageRoute(builder: (context) => HomeInput()));
   }
@@ -56,7 +58,8 @@ class IntroScreenState extends State<IntroScreen> {
   Widget build(BuildContext context) {
     return new IntroSlider(
       // List slides
-      listCustomTabs: this.slides.map((slide) => slide.toWidget()).toList(),
+      listCustomTabs:
+          this.slides.map((slide) => slide.toWidget(context)).toList(),
       // // Dot indicator
       // colorDot: Color(0xffffcc5c),
       // sizeDot: 13.0,
@@ -64,6 +67,15 @@ class IntroScreenState extends State<IntroScreen> {
       // // Show or hide status bar
       // shouldHideStatusBar: true,
       onDonePress: this.onDonePress,
+      skipButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(Colors.white),
+      ),
+      nextButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(Colors.white),
+      ),
+      doneButtonStyle: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(Colors.white),
+      ),
     );
   }
 }

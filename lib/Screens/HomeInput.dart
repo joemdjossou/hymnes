@@ -51,7 +51,7 @@ class _HomeInputState extends State<HomeInput> {
                   width: 50.0,
                   height: 50.0,
                   decoration: new BoxDecoration(
-                      color: Colors.green.shade200,
+                      color: Colors.teal.shade200,
                       borderRadius: BorderRadius.all(Radius.circular(5.0))),
                   child: Container(
                     width: 40.0,
@@ -133,7 +133,7 @@ class _HomeInputState extends State<HomeInput> {
                   width: 50.0,
                   height: 50.0,
                   decoration: new BoxDecoration(
-                      color: Colors.green.shade200,
+                      color: Colors.teal.shade200,
                       borderRadius: BorderRadius.all(Radius.circular(5.0))),
                   child: Container(
                     width: 40.0,
@@ -241,7 +241,7 @@ class _HomeInputState extends State<HomeInput> {
               //     Colors.green
               //   ]
               // ),
-              color: const Color(0xff066610),
+              color: Colors.teal[800],
               borderRadius: new BorderRadius.only(
                 bottomLeft: const Radius.circular(100.0),
                 // bottomRight: const  Radius.circular(40.0)
@@ -288,7 +288,7 @@ class _HomeInputState extends State<HomeInput> {
                       child: Container(
                         width: 50.0,
                         decoration: new BoxDecoration(
-                          color: const Color(0xff066610),
+                          color: Colors.teal[800]!,
                         ),
                         child: new IconButton(
                           icon: isTextSearch
@@ -418,7 +418,7 @@ class MyPainter extends CustomPainter {
     // Close line to reset it back
     ovalPath.close();
 
-    paint.color = Colors.green.shade200;
+    paint.color = Colors.teal.shade200;
     canvas.drawPath(ovalPath, paint);
   }
 

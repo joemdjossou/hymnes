@@ -10,12 +10,15 @@ class _NumericClassState extends State<NumericClass> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text("Numeros"),),
+        title: Center(
+          child: Text("Numeros"),
+        ),
       ),
-        body: Container(
-          child: Center(
-            child : Text("Recherche par des numeros"),
-          ),
-        ));
+      body: Container(
+        child: Center(
+          child: Text("Recherche par des numeros"),
+        ),
+      ),
+    );
   }
 }
