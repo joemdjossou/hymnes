@@ -26,13 +26,23 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Center(child: Text('Accueil')),
         elevation: 10.0,
         actions: <Widget>[
-          PopupMenuButton(
+          PopupMenuButton<String>(
+            onSelected: (String value) {
+              // Handle menu item selection
+              if (value == 'noter') {
+                print('Noter ! selected');
+              } else if (value == 'partager') {
+                print('Partager selected');
+              }
+            },
             itemBuilder: (BuildContext context) {
               return [
-                PopupMenuItem(
+                PopupMenuItem<String>(
+                  value: 'noter', // Add a value
                   child: Text('Noter !'),
                 ),
-                PopupMenuItem(
+                PopupMenuItem<String>(
+                  value: 'partager', // Add a value
                   child: Text('Partager'),
                 ),
               ];
@@ -99,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             size: MediaQuery.of(context).size.width / 4,
                           )),
                       onPressed: () {
+                        Navigator.of(context).pushNamed('/home4');
                         print('Alphabetical clicked !');
                       },
                     ),

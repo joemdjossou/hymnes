@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hymnes/Screens/IntroScreen.dart';
+import 'package:hymnes/Screens/MyHomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //import 'MyHomePage.dart';
 // import 'IntroScreen.dart';
@@ -23,7 +24,9 @@ class _SplashState extends State<Splash> {
 
     if (_seen) {
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => IntroScreen()));
+          // MaterialPageRoute(builder: (context) => HomeInput()));
+          MaterialPageRoute(
+              builder: (context) => MyHomePage('Accueil', title: 'Accueil')));
     } else {
       await prefs.setBool('seen', true);
       Navigator.of(context).pushReplacement(
