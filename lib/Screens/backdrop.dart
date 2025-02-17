@@ -4,7 +4,7 @@
 
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:hymnes/category.dart';
+import 'package:hymnes/models/category.dart';
 
 const double _kFlingVelocity = 2.0;
 

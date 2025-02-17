@@ -1,9 +1,13 @@
+import 'dart:nativewrappers/_internal/vm/lib/typed_data_patch.dart';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_midi/flutter_midi.dart';
 import 'package:hymnes/components/MarqueeWidget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../HymnesBrain.dart';
+import '../models/HymnesBrain.dart';
 
 const _PANEL_HEADER_HEIGHT = 40.0;
 
@@ -27,6 +31,18 @@ class _UniqueOneState extends State<UniqueOne>
       print('Error playing audio: $e');
     }
   }
+
+  // @override
+  // void initState() {
+  //   // load('assets/sf2/Piano.SF2');
+  //   super.initState();
+  // }
+
+  // void load(String asset) async {
+  //   FlutterMidi.unmute(); // Optionally Unmute
+  //   ByteData _byte = await rootBundle.load(asset);
+  //   FlutterMidi.prepare(sf2: _byte);
+  // }
 
   // HymnesBrain brain = HymnesBrain();
   String voix = 'soprano';
@@ -392,7 +408,7 @@ class _UniqueOneState extends State<UniqueOne>
                   print('Playing $voix');
                   String audioPath = 'audio/' +
                       brain.getHymneAudio(widget.numero! - 1, voix) +
-                      '.mp3';
+                      '.mid';
                   print('Attempting to play audio at: $audioPath');
                   await playAudio(audioPath);
                 }

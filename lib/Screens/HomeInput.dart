@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hymnes/Screens/UniqueOne.dart';
-import '../HymnesBrain.dart';
+import '../models/HymnesBrain.dart';
 
 class HomeInput extends StatefulWidget {
   @override
