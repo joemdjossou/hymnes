@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hymnes/Screens/UniqueOne.dart';
-import '../HymnesBrain.dart';
+import '../models/HymnesBrain.dart';
 
 class HomeInput extends StatefulWidget {
   @override
@@ -202,36 +202,29 @@ class _HomeInputState extends State<HomeInput> {
           padding: new EdgeInsets.only(
               // top: MediaQuery.of(context).padding.top
               ),
-          child: new Padding(
-            padding: const EdgeInsets.only(
-                // left: 30.0,
-                // top: 20.0,
-                // bottom: 20.0
+          child: Center(
+            child: Row(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 30.0),
+                  child: Text(
+                    "Accueil",
+                    style: TextStyle(color: Colors.white, fontSize: 20.0),
+                  ),
                 ),
-            child: Center(
-              child: Row(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 30.0),
-                    child: Text(
-                      "Accueil",
-                      style: TextStyle(color: Colors.white, fontSize: 20.0),
-                    ),
+                IconButton(
+                  icon: Icon(
+                    Icons.short_text,
+                    size: 32.0,
+                    color: Colors.white,
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.short_text,
-                      size: 32.0,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      print('object');
-                    },
-                  ),
-                ],
-              ),
+                  onPressed: () {
+                    print('object');
+                  },
+                ),
+              ],
             ),
           ),
           decoration: new BoxDecoration(

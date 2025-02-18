@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hymnes/HymnesBrain.dart';
+import 'package:hymnes/models/HymnesBrain.dart';
 import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
 // import 'package:audioplayers/audio_cache.dart';

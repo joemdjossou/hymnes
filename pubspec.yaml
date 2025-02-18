@@ -29,6 +29,12 @@ dependencies:
   intro_slider:
   showcaseview:
   flutter_launcher_icons:
+  flutter_midi:
+  get: ^4.6.5
+  get_storage: ^2.1.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
 
 dev_dependencies:
   flutter_test:

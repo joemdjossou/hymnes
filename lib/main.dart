@@ -6,8 +6,8 @@ import 'package:hymnes/Screens/SearchClass.dart';
 import 'package:hymnes/Screens/NumericClass.dart';
 import 'package:hymnes/Screens/AlphabeticClass.dart';
 import 'package:hymnes/Screens/UniqueOne.dart';
-import 'Screens/UniqueLectureClass.dart';
-import 'HymnesBrain.dart';
+import 'models/UniqueLectureClass.dart';
+import 'models/HymnesBrain.dart';
 import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';

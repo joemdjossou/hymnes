@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hymnes/HymnesBrain.dart';
+import 'package:hymnes/models/HymnesBrain.dart';
 import 'package:hymnes/Screens/UniqueOne.dart';
 
 class FavorisClass extends StatefulWidget {
