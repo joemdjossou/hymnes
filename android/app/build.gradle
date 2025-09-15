@@ -15,10 +15,21 @@ android {
     namespace = "com.example.hymnes"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+    
+    // Fix for audioplayers plugin
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    
+    // Fix for audioplayers plugin
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libjsc.so'
     }
 
     kotlinOptions {
@@ -30,7 +41,7 @@ android {
         applicationId = "com.joemdjossou.hymnes"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
