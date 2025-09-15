@@ -77,22 +77,26 @@ lib/
 ### Installation
 
 1. **Clone the repository:**
+
 ```bash
 git clone https://github.com/yourusername/hymnes.git
 cd hymnes
 ```
 
 2. **Install dependencies:**
+
 ```bash
 flutter pub get
 ```
 
 3. **Generate code (if needed):**
+
 ```bash
 flutter packages pub run build_runner build
 ```
 
 4. **Run the app:**
+
 ```bash
 flutter run
 ```
@@ -100,6 +104,7 @@ flutter run
 ## 📦 Dependencies
 
 ### Core Dependencies
+
 - `flutter_bloc: ^8.1.3` - State management
 - `equatable: ^2.0.5` - Value equality
 - `go_router: ^12.1.3` - Navigation
@@ -111,11 +116,13 @@ flutter run
 - `path_provider: ^2.1.1` - File system access
 
 ### UI Dependencies
+
 - `intro_slider: ^4.2.1` - Onboarding screens
 - `showcaseview: ^2.0.3` - Feature highlights
 - `flutter_launcher_icons: ^0.13.1` - App icons
 
 ### Development Dependencies
+
 - `flutter_test` - Testing framework
 - `flutter_lints: ^3.0.0` - Code linting
 - `hive_generator: ^2.0.1` - Code generation for Hive
@@ -131,6 +138,7 @@ flutter run
 ## 📊 Data Structure
 
 ### Hymn Model
+
 ```dart
 class Hymn {
   final String number;        // Hymn number
@@ -146,6 +154,7 @@ class Hymn {
 ## 🧪 Testing
 
 Run the test suite:
+
 ```bash
 flutter test
 ```
@@ -153,16 +162,19 @@ flutter test
 ## 📦 Building
 
 ### Android APK
+
 ```bash
 flutter build apk --release
 ```
 
 ### iOS App
+
 ```bash
 flutter build ios --release
 ```
 
 ### Web App
+
 ```bash
 flutter build web --release
 ```
@@ -191,6 +203,7 @@ We welcome contributions! Please follow these steps:
 5. Open a Pull Request
 
 ### Code Style
+
 - Follow Flutter/Dart style guidelines
 - Use meaningful variable and function names
 - Add comments for complex logic
@@ -224,4 +237,4 @@ If you find this project helpful, please consider giving it a star! ⭐
 
 **Built with ❤️ using Flutter**
 
-*"Make a joyful noise unto the Lord, all ye lands!"* - Psalm 100:1
+_"Make a joyful noise unto the Lord, all ye lands!"_ - Psalm 100:1
