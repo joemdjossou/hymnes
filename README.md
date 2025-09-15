@@ -65,6 +65,28 @@ lib/
 - **Favorites**: Manage your saved hymns
 - **Search**: Advanced search with multiple filters
 
+## 📱 Preview
+
+### App Screenshots
+
+<div align="center">
+  <img src="hymnes.png" alt="Hymnes App Preview" width="300" />
+  <p><em>Main app interface with elegant light cream background and black text</em></p>
+</div>
+
+<div align="center">
+  <img src="screenshot_1.png" alt="Hymnes App Screenshot" width="300" />
+  <p><em>Home screen showing hymn list with search functionality</em></p>
+</div>
+
+### Design Features
+
+- **🌿 Light Cream Background**: Elegant and easy on the eyes
+- **⚫ Black Text**: High contrast for excellent readability
+- **🥇 Gold Accents**: Subtle gold highlights for favorites and interactive elements
+- **📱 Modern UI**: Clean, professional design with Material Design 3
+- **🎵 Audio Integration**: MIDI playback with intuitive controls
+
 ## 🚀 Getting Started
 
 ### Prerequisites
