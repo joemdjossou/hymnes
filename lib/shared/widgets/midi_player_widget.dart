@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../core/services/midi_service.dart';
 import '../../features/midi/bloc/midi_bloc.dart';
 import '../constants/app_colors.dart';
 
@@ -15,11 +15,42 @@ class MidiPlayerWidget extends StatelessWidget {
     required this.hymnTitle,
   });
 
+  void _showComingSoonSnackBar(BuildContext context, String voiceName) {
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$voiceName - ${l10n.comingSoon}'),
+        backgroundColor: AppColors.primary,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<MidiBloc>(
-      builder: (context, midiBloc, child) {
-        final isCurrentHymn = midiBloc.currentMidiFile == 'h$hymnNumber';
+    final l10n = AppLocalizations.of(context)!;
+    
+    return BlocBuilder<MidiBloc, MidiState>(
+      builder: (context, state) {
+        String? currentMidiFile;
+        bool isPlaying = false;
+        Duration position = Duration.zero;
+        Duration duration = Duration.zero;
+        String? lastError;
+
+        if (state is MidiLoaded) {
+          currentMidiFile = state.currentMidiFile;
+          isPlaying = state.isPlaying;
+          position = state.position;
+          duration = state.duration;
+          lastError = state.lastError;
+        }
+
+        final isCurrentHymn = currentMidiFile == 'h$hymnNumber';
 
         return Container(
           padding: const EdgeInsets.all(16),
@@ -75,7 +106,7 @@ class MidiPlayerWidget extends StatelessWidget {
               const SizedBox(height: 16),
 
               // Error message display
-              if (isCurrentHymn && midiBloc.lastError != null) ...[
+              if (isCurrentHymn && lastError != null) ...[
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -93,7 +124,7 @@ class MidiPlayerWidget extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          midiBloc.lastError!,
+                          lastError,
                           style: TextStyle(
                             color: AppColors.error,
                             fontSize: 12,
@@ -101,7 +132,7 @@ class MidiPlayerWidget extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        onPressed: () => midiBloc.clearError(),
+                        onPressed: () => context.read<MidiBloc>().add(ClearMidiError()),
                         icon: Icon(
                           Icons.close,
                           color: AppColors.error,
@@ -116,76 +147,16 @@ class MidiPlayerWidget extends StatelessWidget {
                 const SizedBox(height: 16),
               ],
 
-              // Voice track selection
-              if (isCurrentHymn) ...[
-                Text(
-                  'Voice Selection:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: VoiceTrack.values.map((track) {
-                    final isSelected = midiBloc.currentTrack == track;
-                    return GestureDetector(
-                      onTap: () => midiBloc.playVoice('h$hymnNumber', track),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.cardBackground,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.border,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              midiBloc.getTrackIcon(track),
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              midiBloc.getTrackDisplayName(track),
-                              style: TextStyle(
-                                color: isSelected
-                                    ? Colors.white
-                                    : AppColors.textPrimary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 16),
-              ],
 
               // Progress bar
-              if (isCurrentHymn && midiBloc.duration > Duration.zero) ...[
+              if (isCurrentHymn && duration > Duration.zero) ...[
                 Column(
                   children: [
                     Slider(
-                      value: midiBloc.position.inMilliseconds.toDouble(),
-                      max: midiBloc.duration.inMilliseconds.toDouble(),
+                      value: position.inMilliseconds.toDouble(),
+                      max: duration.inMilliseconds.toDouble(),
                       onChanged: (value) {
-                        midiBloc.seekTo(Duration(milliseconds: value.toInt()));
+                        context.read<MidiBloc>().add(SeekMidi(Duration(milliseconds: value.toInt())));
                       },
                       activeColor: AppColors.primary,
                       inactiveColor: AppColors.border,
@@ -194,14 +165,14 @@ class MidiPlayerWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _formatDuration(midiBloc.position),
+                          _formatDuration(position),
                           style: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 12,
                           ),
                         ),
                         Text(
-                          _formatDuration(midiBloc.duration),
+                          _formatDuration(duration),
                           style: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 12,
@@ -221,60 +192,46 @@ class MidiPlayerWidget extends StatelessWidget {
                   // Play/All Voices button
                   _buildControlButton(
                     context,
-                    midiBloc,
                     icon: Icons.play_arrow,
-                    label: 'All Voices',
-                    onTap: () => midiBloc.playMidi('h$hymnNumber'),
-                    isActive: isCurrentHymn &&
-                        midiBloc.currentTrack == VoiceTrack.all,
+                    label: l10n.allVoices,
+                    onTap: () => context.read<MidiBloc>().add(PlayMidi('h$hymnNumber')),
+                    isActive: isCurrentHymn && isPlaying,
                   ),
 
                   // Soprano button
                   _buildControlButton(
                     context,
-                    midiBloc,
                     icon: Icons.mic,
-                    label: 'Soprano',
-                    onTap: () =>
-                        midiBloc.playVoice('h$hymnNumber', VoiceTrack.soprano),
-                    isActive: isCurrentHymn &&
-                        midiBloc.currentTrack == VoiceTrack.soprano,
+                    label: l10n.soprano,
+                    onTap: () => _showComingSoonSnackBar(context, l10n.soprano),
+                    isActive: false,
                   ),
 
                   // Alto button
                   _buildControlButton(
                     context,
-                    midiBloc,
                     icon: Icons.music_note,
-                    label: 'Alto',
-                    onTap: () =>
-                        midiBloc.playVoice('h$hymnNumber', VoiceTrack.alto),
-                    isActive: isCurrentHymn &&
-                        midiBloc.currentTrack == VoiceTrack.alto,
+                    label: l10n.alto,
+                    onTap: () => _showComingSoonSnackBar(context, l10n.alto),
+                    isActive: false,
                   ),
 
                   // Tenor button
                   _buildControlButton(
                     context,
-                    midiBloc,
                     icon: Icons.piano,
-                    label: 'Tenor',
-                    onTap: () =>
-                        midiBloc.playVoice('h$hymnNumber', VoiceTrack.tenor),
-                    isActive: isCurrentHymn &&
-                        midiBloc.currentTrack == VoiceTrack.tenor,
+                    label: l10n.tenor,
+                    onTap: () => _showComingSoonSnackBar(context, l10n.tenor),
+                    isActive: false,
                   ),
 
                   // Bass button
                   _buildControlButton(
                     context,
-                    midiBloc,
                     icon: Icons.music_note,
-                    label: 'Bass',
-                    onTap: () =>
-                        midiBloc.playVoice('h$hymnNumber', VoiceTrack.bass),
-                    isActive: isCurrentHymn &&
-                        midiBloc.currentTrack == VoiceTrack.bass,
+                    label: l10n.bass,
+                    onTap: () => _showComingSoonSnackBar(context, l10n.bass),
+                    isActive: false,
                   ),
                 ],
               ),
@@ -286,18 +243,18 @@ class MidiPlayerWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      onPressed: midiBloc.isPlaying
-                          ? () => midiBloc.pause()
-                          : () => midiBloc.resume(),
+                      onPressed: isPlaying
+                          ? () => context.read<MidiBloc>().add(PauseMidi())
+                          : () => context.read<MidiBloc>().add(ResumeMidi()),
                       icon: Icon(
-                        midiBloc.isPlaying ? Icons.pause : Icons.play_arrow,
+                        isPlaying ? Icons.pause : Icons.play_arrow,
                         color: AppColors.primary,
                         size: 32,
                       ),
                     ),
                     const SizedBox(width: 16),
                     IconButton(
-                      onPressed: () => midiBloc.stop(),
+                      onPressed: () => context.read<MidiBloc>().add(StopMidi()),
                       icon: Icon(
                         Icons.stop,
                         color: AppColors.error,
@@ -315,8 +272,7 @@ class MidiPlayerWidget extends StatelessWidget {
   }
 
   Widget _buildControlButton(
-    BuildContext context,
-    MidiBloc midiBloc, {
+    BuildContext context, {
     required IconData icon,
     required String label,
     required VoidCallback onTap,

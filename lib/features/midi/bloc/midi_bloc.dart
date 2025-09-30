@@ -1,96 +1,309 @@
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/services/midi_service.dart';
 
-class MidiBloc extends ChangeNotifier {
+// Events
+abstract class MidiEvent extends Equatable {
+  const MidiEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class InitializeMidi extends MidiEvent {}
+
+class PlayMidi extends MidiEvent {
+  final String midiFileName;
+
+  const PlayMidi(this.midiFileName);
+
+  @override
+  List<Object?> get props => [midiFileName];
+}
+
+class PauseMidi extends MidiEvent {}
+
+class ResumeMidi extends MidiEvent {}
+
+class StopMidi extends MidiEvent {}
+
+class SeekMidi extends MidiEvent {
+  final Duration position;
+
+  const SeekMidi(this.position);
+
+  @override
+  List<Object?> get props => [position];
+}
+
+class SetMidiVolume extends MidiEvent {
+  final double volume;
+
+  const SetMidiVolume(this.volume);
+
+  @override
+  List<Object?> get props => [volume];
+}
+
+class ClearMidiError extends MidiEvent {}
+
+class UpdateMidiPosition extends MidiEvent {
+  final Duration position;
+  final Duration duration;
+  final bool isPlaying;
+
+  const UpdateMidiPosition({
+    required this.position,
+    required this.duration,
+    required this.isPlaying,
+  });
+
+  @override
+  List<Object?> get props => [position, duration, isPlaying];
+}
+
+// States
+abstract class MidiState extends Equatable {
+  const MidiState();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class MidiInitial extends MidiState {}
+
+class MidiLoaded extends MidiState {
+  final MidiPlayerState playerState;
+  final String? currentMidiFile;
+  final Duration position;
+  final Duration duration;
+  final bool isPlaying;
+  final bool isPaused;
+  final bool isLoading;
+  final String? lastError;
+
+  const MidiLoaded({
+    required this.playerState,
+    this.currentMidiFile,
+    required this.position,
+    required this.duration,
+    required this.isPlaying,
+    required this.isPaused,
+    required this.isLoading,
+    this.lastError,
+  });
+
+  @override
+  List<Object?> get props => [
+        playerState,
+        currentMidiFile,
+        position,
+        duration,
+        isPlaying,
+        isPaused,
+        isLoading,
+        lastError,
+      ];
+
+  MidiLoaded copyWith({
+    MidiPlayerState? playerState,
+    String? currentMidiFile,
+    Duration? position,
+    Duration? duration,
+    bool? isPlaying,
+    bool? isPaused,
+    bool? isLoading,
+    String? lastError,
+  }) {
+    return MidiLoaded(
+      playerState: playerState ?? this.playerState,
+      currentMidiFile: currentMidiFile ?? this.currentMidiFile,
+      position: position ?? this.position,
+      duration: duration ?? this.duration,
+      isPlaying: isPlaying ?? this.isPlaying,
+      isPaused: isPaused ?? this.isPaused,
+      isLoading: isLoading ?? this.isLoading,
+      lastError: lastError ?? this.lastError,
+    );
+  }
+}
+
+class MidiError extends MidiState {
+  final String message;
+
+  const MidiError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+// BLoC
+class MidiBloc extends Bloc<MidiEvent, MidiState> {
   final MidiService _midiService = MidiService();
 
-  // Getters
-  MidiPlayerState get state => _midiService.state;
-  VoiceTrack get currentTrack => _midiService.currentTrack;
-  String? get currentMidiFile => _midiService.currentMidiFile;
-  Duration get position => _midiService.position;
-  Duration get duration => _midiService.duration;
-  bool get isPlaying => _midiService.isPlaying;
-  bool get isPaused => _midiService.isPaused;
-  bool get isLoading => _midiService.isLoading;
-  String? get lastError => _midiService.lastError;
+  MidiBloc() : super(MidiInitial()) {
+    on<InitializeMidi>(_onInitializeMidi);
+    on<PlayMidi>(_onPlayMidi);
+    on<PauseMidi>(_onPauseMidi);
+    on<ResumeMidi>(_onResumeMidi);
+    on<StopMidi>(_onStopMidi);
+    on<SeekMidi>(_onSeekMidi);
+    on<SetMidiVolume>(_onSetMidiVolume);
+    on<ClearMidiError>(_onClearMidiError);
+    on<UpdateMidiPosition>(_onUpdateMidiPosition);
 
-  MidiBloc() {
+    // Listen to MIDI service changes
     _midiService.addListener(_onMidiServiceChanged);
   }
 
   void _onMidiServiceChanged() {
-    notifyListeners();
+    add(UpdateMidiPosition(
+      position: _midiService.position,
+      duration: _midiService.duration,
+      isPlaying: _midiService.isPlaying,
+    ));
   }
 
-  Future<void> initialize() async {
-    await _midiService.initialize();
+  Future<void> _onInitializeMidi(
+      InitializeMidi event, Emitter<MidiState> emit) async {
+    try {
+      await _midiService.initialize();
+      emit(MidiLoaded(
+        playerState: _midiService.state,
+        currentMidiFile: _midiService.currentMidiFile,
+        position: _midiService.position,
+        duration: _midiService.duration,
+        isPlaying: _midiService.isPlaying,
+        isPaused: _midiService.isPaused,
+        isLoading: _midiService.isLoading,
+        lastError: _midiService.lastError,
+      ));
+    } catch (e) {
+      emit(MidiError(e.toString()));
+    }
   }
 
-  Future<void> playMidi(String midiFileName, {VoiceTrack track = VoiceTrack.all}) async {
-    await _midiService.playMidi(midiFileName, track: track);
+  Future<void> _onPlayMidi(PlayMidi event, Emitter<MidiState> emit) async {
+    try {
+      final currentState = state;
+      if (currentState is MidiLoaded) {
+        emit(currentState.copyWith(isLoading: true));
+      }
+
+      await _midiService.playMidi(event.midiFileName);
+
+      emit(MidiLoaded(
+        playerState: _midiService.state,
+        currentMidiFile: _midiService.currentMidiFile,
+        position: _midiService.position,
+        duration: _midiService.duration,
+        isPlaying: _midiService.isPlaying,
+        isPaused: _midiService.isPaused,
+        isLoading: _midiService.isLoading,
+        lastError: _midiService.lastError,
+      ));
+    } catch (e) {
+      emit(MidiError(e.toString()));
+    }
   }
 
-  Future<void> playVoice(String midiFileName, VoiceTrack voice) async {
-    await _midiService.playVoice(midiFileName, voice);
+  Future<void> _onPauseMidi(PauseMidi event, Emitter<MidiState> emit) async {
+    try {
+      await _midiService.pause();
+      final currentState = state;
+      if (currentState is MidiLoaded) {
+        emit(currentState.copyWith(
+          playerState: _midiService.state,
+          isPlaying: _midiService.isPlaying,
+          isPaused: _midiService.isPaused,
+        ));
+      }
+    } catch (e) {
+      emit(MidiError(e.toString()));
+    }
   }
 
-  Future<void> pause() async {
-    await _midiService.pause();
+  Future<void> _onResumeMidi(ResumeMidi event, Emitter<MidiState> emit) async {
+    try {
+      await _midiService.resume();
+      final currentState = state;
+      if (currentState is MidiLoaded) {
+        emit(currentState.copyWith(
+          playerState: _midiService.state,
+          isPlaying: _midiService.isPlaying,
+          isPaused: _midiService.isPaused,
+        ));
+      }
+    } catch (e) {
+      emit(MidiError(e.toString()));
+    }
   }
 
-  Future<void> resume() async {
-    await _midiService.resume();
+  Future<void> _onStopMidi(StopMidi event, Emitter<MidiState> emit) async {
+    try {
+      await _midiService.stop();
+      final currentState = state;
+      if (currentState is MidiLoaded) {
+        emit(currentState.copyWith(
+          playerState: _midiService.state,
+          currentMidiFile: null,
+          position: Duration.zero,
+          isPlaying: false,
+          isPaused: false,
+        ));
+      }
+    } catch (e) {
+      emit(MidiError(e.toString()));
+    }
   }
 
-  Future<void> stop() async {
-    await _midiService.stop();
+  Future<void> _onSeekMidi(SeekMidi event, Emitter<MidiState> emit) async {
+    try {
+      await _midiService.seekTo(event.position);
+      final currentState = state;
+      if (currentState is MidiLoaded) {
+        emit(currentState.copyWith(position: event.position));
+      }
+    } catch (e) {
+      emit(MidiError(e.toString()));
+    }
   }
 
-  Future<void> seekTo(Duration position) async {
-    await _midiService.seekTo(position);
+  Future<void> _onSetMidiVolume(
+      SetMidiVolume event, Emitter<MidiState> emit) async {
+    try {
+      await _midiService.setVolume(event.volume);
+    } catch (e) {
+      emit(MidiError(e.toString()));
+    }
   }
 
-  Future<void> setVolume(double volume) async {
-    await _midiService.setVolume(volume);
-  }
-
-  Future<void> toggleLoop() async {
-    await _midiService.toggleLoop();
-  }
-
-  void clearError() {
+  Future<void> _onClearMidiError(
+      ClearMidiError event, Emitter<MidiState> emit) async {
     _midiService.clearError();
+    final currentState = state;
+    if (currentState is MidiLoaded) {
+      emit(currentState.copyWith(lastError: null));
+    }
   }
 
-  String getTrackDisplayName(VoiceTrack track) {
-    return _midiService.getTrackDisplayName(track);
-  }
-
-  String getTrackIcon(VoiceTrack track) {
-    return _midiService.getTrackIcon(track);
-  }
-
-  // New methods for voice control
-  Future<void> setVoiceVolume(String voiceName, double volume) async {
-    await _midiService.setVoiceVolume(voiceName, volume);
-  }
-
-  Future<void> toggleVoiceMute(String voiceName) async {
-    await _midiService.toggleVoiceMute(voiceName);
-  }
-
-  Map<String, List<dynamic>> getCurrentActiveNotes() {
-    return _midiService.getCurrentActiveNotes();
-  }
-
-  bool isVoicePlaying(String voiceName) {
-    return _midiService.isVoicePlaying(voiceName);
+  Future<void> _onUpdateMidiPosition(
+      UpdateMidiPosition event, Emitter<MidiState> emit) async {
+    final currentState = state;
+    if (currentState is MidiLoaded) {
+      emit(currentState.copyWith(
+        position: event.position,
+        duration: event.duration,
+        isPlaying: event.isPlaying,
+        playerState: _midiService.state,
+        lastError: _midiService.lastError,
+      ));
+    }
   }
 
   @override
-  void dispose() {
+  Future<void> close() {
     _midiService.removeListener(_onMidiServiceChanged);
-    super.dispose();
+    return super.close();
   }
 }

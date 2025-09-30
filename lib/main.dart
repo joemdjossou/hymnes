@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
 
 import 'core/providers/language_provider.dart';
 import 'core/services/storage_service.dart';
+import 'features/audio/bloc/audio_bloc.dart';
 import 'features/midi/bloc/midi_bloc.dart';
 import 'presentation/screens/splash_screen.dart';
 import 'shared/constants/app_theme.dart';
@@ -31,13 +31,16 @@ class HymnesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (context) => LanguageBloc()..add(LoadLanguage()),
         ),
-        ChangeNotifierProvider(
-          create: (context) => MidiBloc(),
+        BlocProvider(
+          create: (context) => MidiBloc()..add(InitializeMidi()),
+        ),
+        BlocProvider(
+          create: (context) => AudioBloc(),
         ),
       ],
       child: BlocBuilder<LanguageBloc, LanguageState>(

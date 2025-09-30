@@ -1,192 +1,197 @@
-# 🌿 Hymnes & Louanges
+# 🎵 Hymnes & Louanges
 
-A beautiful Flutter application for hymns and praises with MIDI audio playback capabilities, featuring a modern clean architecture and elegant Forest Green, Gold, and White design theme.
+A beautiful Flutter application for French Adventist hymns with MIDI audio playback, featuring clean architecture and elegant design.
 
 ## ✨ Features
 
-- **📚 Comprehensive Hymn Library**: Browse through an extensive collection of hymns with full lyrics
-- **🎵 MIDI Audio Playback**: Listen to hymns with high-quality MIDI audio files
-- **🔍 Advanced Search**: Find hymns by title, lyrics, author, composer, or hymn number
-- **⭐ Favorites System**: Save and manage your favorite hymns for quick access
-- **📱 Modern UI**: Beautiful, responsive design with Forest Green, Gold, and White color scheme
-- **🌐 Offline Support**: All content available offline - no internet required
-- **🎨 Custom Design**: Elegant typography with Raleway font family
-- **📊 Clean Architecture**: Well-structured codebase following Flutter best practices
-
-## 🎨 Design System
-
-The app features a sophisticated color palette inspired by nature and worship:
-
-- **🌲 Forest Green** (`#228B22`) - Primary color for text and UI elements
-- **🥇 Gold** (`#FFD700`) - Accent color for highlights and favorites
-- **💛 Yellow** (`#FFFFFF00`) - Secondary accent for interactive elements
-- **⚪ White** (`#FFFFFF`) - Clean backgrounds and cards
-- **📝 Typography**: Raleway font family for elegant readability
-
-## 🏗️ Architecture
-
-This project follows clean architecture principles with a well-organized structure:
-
-```
-lib/
-├── core/                    # Core functionality
-│   ├── models/             # Data models (Hymn, etc.)
-│   ├── repositories/       # Data access layer
-│   └── services/           # Business logic services
-├── features/               # Feature modules
-│   ├── hymns/             # Hymns feature with BLoC
-│   ├── audio/             # Audio playback feature
-│   ├── midi/              # MIDI file handling
-│   ├── search/            # Search functionality
-│   └── favorites/         # Favorites management
-├── presentation/           # UI layer
-│   ├── screens/           # Screen widgets
-│   └── blocs/             # State management
-└── shared/                # Shared components
-    ├── constants/         # App constants and colors
-    ├── utils/             # Utility functions
-    └── widgets/           # Reusable UI components
-```
-
-## 🛠️ Technology Stack
-
-- **Flutter**: 3.2.3+ with Dart 3.0.0+
-- **State Management**: BLoC pattern with flutter_bloc
-- **Navigation**: Go Router for type-safe navigation
-- **Storage**: Hive for local data persistence
-- **Audio**: Just Audio for MIDI playback
-- **UI**: Material Design 3 with custom theming
-- **Architecture**: Clean Architecture with Repository pattern
-
-## 📱 Key Screens
-
-- **Home Screen**: Browse and search through all hymns
-- **Hymn Detail**: View full lyrics and play MIDI audio
-- **Favorites**: Manage your saved hymns
-- **Search**: Advanced search with multiple filters
+- **📚 Hymn Library**: Browse through a collection of French Adventist hymns with full lyrics
+- **🎵 MIDI Audio Playback**: Listen to hymns with MIDI audio files
+- **🔍 Search**: Find hymns by title, lyrics, author, composer, or hymn number
+- **⭐ Favorites**: Save your favorite hymns (coming soon)
+- **🌐 Bilingual Support**: French and English interface
+- **📱 Modern UI**: Clean, responsive design with Material Design 3
+- **🎨 Elegant Theme**: Forest Green, Gold, and White color scheme
 
 ## 📱 Preview
-
-### App Screenshots
-
-<div align="center">
-  <img src="hymnes.png" alt="Hymnes App Preview" width="300" />
-  <p><em>Main app interface with elegant light cream background and black text</em></p>
-</div>
 
 <div align="center">
   <img src="screenshot_1.png" alt="Hymnes App Screenshot" width="300" />
   <p><em>Home screen showing hymn list with search functionality</em></p>
 </div>
 
-### Design Features
-
-- **🌿 Light Cream Background**: Elegant and easy on the eyes
-- **⚫ Black Text**: High contrast for excellent readability
-- **🥇 Gold Accents**: Subtle gold highlights for favorites and interactive elements
-- **📱 Modern UI**: Clean, professional design with Material Design 3
-- **🎵 Audio Integration**: MIDI playback with intuitive controls
-
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Flutter SDK (3.2.3 or higher)
-- Dart SDK (3.0.0 or higher)
-- Android Studio / VS Code with Flutter extensions
-- Android SDK / Xcode (for mobile development)
+Before you begin, ensure you have the following installed:
 
-### Installation
+- **Flutter SDK**: 3.2.3 or higher
+- **Dart SDK**: 3.0.0 or higher
+- **Git**: For cloning the repository
+- **IDE**: Android Studio, VS Code, or IntelliJ with Flutter plugin
 
-1. **Clone the repository:**
+### Installation Steps
 
-```bash
-git clone https://github.com/yourusername/hymnes.git
-cd hymnes
+1. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/yourusername/hymnes.git
+   cd hymnes
+   ```
+
+2. **Install Flutter Dependencies**
+
+   ```bash
+   flutter pub get
+   ```
+
+3. **Generate Localization Files**
+
+   ```bash
+   flutter gen-l10n
+   ```
+
+4. **Generate Code (Optional - for Hive adapters)**
+
+   ```bash
+   flutter packages pub run build_runner build
+   ```
+
+5. **Run the Application**
+   ```bash
+   flutter run
+   ```
+
+### Platform-Specific Setup
+
+#### For Android Development
+
+- Install Android Studio
+- Set up Android SDK (API level 21 or higher)
+- Enable USB debugging on your device or use an emulator
+
+#### For iOS Development (macOS only)
+
+- Install Xcode from the App Store
+- Install iOS Simulator
+- Ensure you have a valid Apple Developer account for device testing
+
+#### For Web Development
+
+- No additional setup required
+- Run with: `flutter run -d chrome`
+
+## 🛠️ Technology Stack
+
+- **Framework**: Flutter 3.2.3+
+- **Language**: Dart 3.0.0+
+- **State Management**: BLoC Pattern (flutter_bloc 8.1.3)
+- **Audio**: Just Audio 0.9.36 for MIDI playback
+- **Storage**: Hive 2.2.3 for local data persistence
+- **Navigation**: Go Router 12.1.3
+- **Internationalization**: Built-in Flutter i18n
+- **Architecture**: Clean Architecture with Repository Pattern
+
+## 📦 Key Dependencies
+
+```yaml
+dependencies:
+  flutter_bloc: ^8.1.3 # State management
+  just_audio: ^0.9.36 # Audio playback
+  hive: ^2.2.3 # Local storage
+  go_router: ^12.1.3 # Navigation
+  equatable: ^2.0.5 # Value equality
+  shared_preferences: ^2.2.2 # Settings storage
+  showcaseview: ^2.0.3 # Feature highlights
 ```
 
-2. **Install dependencies:**
+## 🏗️ Project Structure
 
-```bash
-flutter pub get
 ```
-
-3. **Generate code (if needed):**
-
-```bash
-flutter packages pub run build_runner build
+lib/
+├── core/                     # Core functionality
+│   ├── models/              # Data models (Hymn)
+│   ├── providers/           # Global providers (Language)
+│   ├── repositories/        # Data access layer
+│   └── services/            # Business logic services
+├── features/                # Feature modules
+│   ├── audio/              # Audio playback (BLoC)
+│   ├── favorites/          # Favorites management
+│   ├── hymns/              # Hymns feature (BLoC)
+│   ├── midi/               # MIDI playback (BLoC)
+│   └── search/             # Search functionality
+├── l10n/                   # Localization files
+│   ├── app_en.arb          # English translations
+│   └── app_fr.arb          # French translations
+├── presentation/           # UI layer
+│   └── screens/            # App screens
+└── shared/                 # Shared components
+    ├── constants/          # App constants & colors
+    ├── utils/              # Utility functions
+    └── widgets/            # Reusable widgets
 ```
-
-4. **Run the app:**
-
-```bash
-flutter run
-```
-
-## 📦 Dependencies
-
-### Core Dependencies
-
-- `flutter_bloc: ^8.1.3` - State management
-- `equatable: ^2.0.5` - Value equality
-- `go_router: ^12.1.3` - Navigation
-- `just_audio: ^0.9.36` - Audio playback
-- `audio_session: ^0.1.18` - Audio session management
-- `hive: ^2.2.3` - Local storage
-- `hive_flutter: ^1.1.0` - Hive Flutter integration
-- `shared_preferences: ^2.2.2` - Settings storage
-- `path_provider: ^2.1.1` - File system access
-
-### UI Dependencies
-
-- `intro_slider: ^4.2.1` - Onboarding screens
-- `showcaseview: ^2.0.3` - Feature highlights
-- `flutter_launcher_icons: ^0.13.1` - App icons
-
-### Development Dependencies
-
-- `flutter_test` - Testing framework
-- `flutter_lints: ^3.0.0` - Code linting
-- `hive_generator: ^2.0.1` - Code generation for Hive
-- `build_runner: ^2.4.7` - Code generation
 
 ## 🎵 Audio Features
 
-- **MIDI Playback**: High-quality MIDI audio files for each hymn
-- **Audio Session Management**: Proper audio session handling
-- **Background Playback**: Continue playing while using other apps
+### MIDI Playback
+
+- **All Voices**: Play complete MIDI arrangements
+- **Individual Voices**: Soprano, Alto, Tenor, Bass (coming soon)
+- **Playback Controls**: Play, pause, stop, seek
 - **Volume Control**: Adjustable audio levels
 
-## 📊 Data Structure
+### Audio Files
 
-### Hymn Model
+MIDI files should be placed in `assets/midi/` with the naming convention:
 
-```dart
-class Hymn {
-  final String number;        // Hymn number
-  final String title;         // Hymn title
-  final String lyrics;        // Full lyrics
-  final String author;        // Author name
-  final String composer;      // Composer name
-  final String style;         // Musical style
-  final String midiFile;      // MIDI file path
-}
-```
+- `h001.mid` for Hymn 1
+- `h002.mid` for Hymn 2
+- etc.
 
-## 🧪 Testing
+## 🌐 Localization
 
-Run the test suite:
+The app supports French and English:
+
+- **French**: Default language
+- **English**: Available through settings
+- **Adding Languages**: Add new `.arb` files in `lib/l10n/`
+
+## 🧪 Development
+
+### Running Tests
 
 ```bash
 flutter test
 ```
 
-## 📦 Building
+### Code Generation
+
+```bash
+# Generate localization files
+flutter gen-l10n
+
+# Generate Hive adapters (if needed)
+flutter packages pub run build_runner build --delete-conflicting-outputs
+```
+
+### Linting
+
+```bash
+flutter analyze
+```
+
+## 📱 Building for Production
 
 ### Android APK
 
 ```bash
 flutter build apk --release
+```
+
+### Android App Bundle
+
+```bash
+flutter build appbundle --release
 ```
 
 ### iOS App
@@ -201,35 +206,106 @@ flutter build ios --release
 flutter build web --release
 ```
 
-## 🎯 Project Status
+## 🎯 State Management
 
-This project represents a complete modernization of the original Hymnes app:
+The app uses **BLoC Pattern** consistently:
 
-- ✅ **Architecture**: Migrated from GetX to BLoC pattern
-- ✅ **UI/UX**: Implemented modern Material Design 3
-- ✅ **Colors**: Applied Forest Green, Gold, and White theme
-- ✅ **Structure**: Clean architecture with proper separation of concerns
-- ✅ **Audio**: MIDI playback integration
-- ✅ **Search**: Advanced search functionality
-- 🔄 **Favorites**: In development
-- 🔄 **Offline**: Enhanced offline capabilities
+### Available BLoCs
+
+- **LanguageBloc**: Language selection and persistence
+- **MidiBloc**: MIDI playback control
+- **AudioBloc**: Audio playback management
+- **HymnsBloc**: Hymn data and search management
+
+### Usage Example
+
+```dart
+// Dispatch events
+context.read<MidiBloc>().add(PlayMidi('h001'));
+
+// Listen to state
+BlocBuilder<MidiBloc, MidiState>(
+  builder: (context, state) {
+    if (state is MidiLoaded && state.isPlaying) {
+      return Text('Playing: ${state.currentMidiFile}');
+    }
+    return Text('Stopped');
+  },
+)
+```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **Dependencies not found**
+
+   ```bash
+   flutter clean
+   flutter pub get
+   ```
+
+2. **Localization not working**
+
+   ```bash
+   flutter gen-l10n
+   flutter run
+   ```
+
+3. **Build errors**
+
+   ```bash
+   flutter clean
+   flutter pub get
+   flutter packages pub run build_runner build --delete-conflicting-outputs
+   ```
+
+4. **Audio not playing**
+   - Ensure MIDI files are in `assets/midi/` directory
+   - Check that assets are declared in `pubspec.yaml`
+   - Verify device audio is not muted
+
+### Platform-Specific Issues
+
+#### Android
+
+- Minimum SDK version: 21
+- If build fails, check `android/app/build.gradle` configuration
+
+#### iOS
+
+- Requires Xcode 12 or later
+- Ensure iOS deployment target is 11.0 or higher
+
+#### Web
+
+- Audio playback may have limitations in some browsers
+- Use Chrome for best compatibility
+
+## 📊 Performance
+
+### Optimization Tips
+
+- MIDI files are loaded on-demand
+- Images and assets are cached automatically
+- BLoC pattern ensures efficient state updates
+- Local storage with Hive for fast data access
 
 ## 🤝 Contributing
 
-We welcome contributions! Please follow these steps:
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+3. **Commit** changes: `git commit -m 'Add amazing feature'`
+4. **Push** to branch: `git push origin feature/amazing-feature`
+5. **Open** a Pull Request
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Code Style
+### Development Guidelines
 
 - Follow Flutter/Dart style guidelines
-- Use meaningful variable and function names
-- Add comments for complex logic
-- Write tests for new features
+- Use BLoC pattern for state management
+- Add tests for new features
+- Update documentation as needed
+- Ensure localization for both languages
 
 ## 📄 License
 
@@ -237,26 +313,31 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **Original Hymn Data**: Traditional hymns and translations
-- **Flutter Community**: For excellent packages and support
-- **Material Design Team**: For design guidelines and inspiration
-- **Open Source Contributors**: For the amazing tools and libraries
+- **Flutter Team**: For the amazing framework
+- **BLoC Library**: For excellent state management
+- **Just Audio**: For reliable audio playback
+- **Material Design**: For design guidelines
+- **Adventist Hymnal**: For the hymn content
 
 ## 📞 Support
 
-If you have any questions, need help, or want to report a bug:
+Need help? Here's how to get support:
 
-- 🐛 **Bug Reports**: Open an issue on GitHub
-- 💡 **Feature Requests**: Submit a feature request
-- 💬 **Discussions**: Join our community discussions
-- 📧 **Contact**: Reach out through GitHub
+- **🐛 Bug Reports**: [Open an issue](https://github.com/yourusername/hymnes/issues)
+- **💡 Feature Requests**: [Submit a request](https://github.com/yourusername/hymnes/issues)
+- **📧 Questions**: Contact through GitHub issues
 
-## 🌟 Star History
+## 🌟 Show Your Support
 
-If you find this project helpful, please consider giving it a star! ⭐
+If this project helps you, please consider:
+
+- ⭐ **Starring** the repository
+- 🐛 **Reporting** bugs you find
+- 💡 **Suggesting** new features
+- 🤝 **Contributing** to the codebase
 
 ---
 
-**Built with ❤️ using Flutter**
+**Built with ❤️ using Flutter and BLoC**
 
 _"Make a joyful noise unto the Lord, all ye lands!"_ - Psalm 100:1
