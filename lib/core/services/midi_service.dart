@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'midi_parser.dart';
+import 'audio_synthesizer.dart';
+import '../models/midi_models.dart';
 
 enum MidiPlayerState {
   stopped,
@@ -28,10 +31,14 @@ class MidiService extends ChangeNotifier {
   String? _currentMidiFile;
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
-  Timer? _positionTimer;
   bool _isInitialized = false;
   String? _lastError;
   bool _isPlaying = false;
+  
+  // Real MIDI playback components
+  final VoiceSynthesizer _synthesizer = VoiceSynthesizer();
+  MIDISequence? _currentSequence;
+  Map<String, List<MIDINote>> _currentActiveNotes = {};
 
   // Getters
   MidiPlayerState get state => _state;
@@ -48,8 +55,8 @@ class MidiService extends ChangeNotifier {
     if (_isInitialized) return;
 
     try {
-      // For now, we'll use a simulated approach
-      // In a real implementation, you would initialize a MIDI library here
+      // Initialize the audio synthesizer
+      _synthesizer.addListener(_onSynthesizerChanged);
       _isInitialized = true;
       debugPrint('MIDI Service initialized successfully');
     } catch (e) {
@@ -58,6 +65,13 @@ class MidiService extends ChangeNotifier {
       _lastError = e.toString();
       notifyListeners();
     }
+  }
+
+  void _onSynthesizerChanged() {
+    _isPlaying = _synthesizer.isPlaying;
+    _position = Duration(milliseconds: (_synthesizer.currentTime * 1000).round());
+    _currentActiveNotes = _synthesizer.getAllActiveNotes();
+    notifyListeners();
   }
 
   Future<void> playMidi(String midiFileName,
@@ -76,9 +90,19 @@ class MidiService extends ChangeNotifier {
 
       debugPrint('Attempting to play MIDI: $midiPath');
 
-      // For now, we'll simulate MIDI playback
-      // In a real implementation, you would load and play the MIDI file here
-      await _simulateMidiPlayback(midiPath, track);
+      // Parse the MIDI file
+      _currentSequence = await MIDIParser.parseMIDIFile(midiPath);
+      _duration = Duration(milliseconds: (_currentSequence!.totalDuration * 1000).round());
+
+      // Configure voice muting based on selected track
+      _configureVoiceMuting(track);
+
+      // Start synthesis
+      await _synthesizer.startSynthesis(_currentSequence!);
+
+      _state = MidiPlayerState.playing;
+      _isPlaying = true;
+      notifyListeners();
 
       debugPrint('Playing MIDI: $midiPath with track: ${track.name}');
     } catch (e) {
@@ -97,40 +121,41 @@ class MidiService extends ChangeNotifier {
     }
   }
 
-  Future<void> _simulateMidiPlayback(String midiPath, VoiceTrack track) async {
-    // Simulate loading time
-    await Future.delayed(const Duration(milliseconds: 500));
+  void _configureVoiceMuting(VoiceTrack track) {
+    // Unmute all voices first
+    _synthesizer.setVoiceMute('Soprano', false);
+    _synthesizer.setVoiceMute('Alto', false);
+    _synthesizer.setVoiceMute('Tenor', false);
+    _synthesizer.setVoiceMute('Bass', false);
 
-    // Set a simulated duration based on the track
+    // Mute voices based on selected track
     switch (track) {
       case VoiceTrack.all:
-        _duration = const Duration(minutes: 3, seconds: 30);
+        // All voices unmuted (already done above)
         break;
       case VoiceTrack.soprano:
-        _duration = const Duration(minutes: 3, seconds: 15);
+        _synthesizer.setVoiceMute('Alto', true);
+        _synthesizer.setVoiceMute('Tenor', true);
+        _synthesizer.setVoiceMute('Bass', true);
         break;
       case VoiceTrack.alto:
-        _duration = const Duration(minutes: 3, seconds: 20);
+        _synthesizer.setVoiceMute('Soprano', true);
+        _synthesizer.setVoiceMute('Tenor', true);
+        _synthesizer.setVoiceMute('Bass', true);
         break;
       case VoiceTrack.tenor:
-        _duration = const Duration(minutes: 3, seconds: 25);
+        _synthesizer.setVoiceMute('Soprano', true);
+        _synthesizer.setVoiceMute('Alto', true);
+        _synthesizer.setVoiceMute('Bass', true);
         break;
       case VoiceTrack.bass:
-        _duration = const Duration(minutes: 3, seconds: 10);
+        _synthesizer.setVoiceMute('Soprano', true);
+        _synthesizer.setVoiceMute('Alto', true);
+        _synthesizer.setVoiceMute('Tenor', true);
         break;
     }
-
-    _position = Duration.zero;
-
-    // Start position timer for simulation
-    _startPositionTimer();
-
-    _state = MidiPlayerState.playing;
-    _isPlaying = true;
-    notifyListeners();
-
-    debugPrint('Simulated MIDI playback started for track: ${track.name}');
   }
+
 
   Future<void> playVoice(String midiFileName, VoiceTrack voice) async {
     await playMidi(midiFileName, track: voice);
@@ -138,9 +163,9 @@ class MidiService extends ChangeNotifier {
 
   Future<void> pause() async {
     try {
+      _synthesizer.pauseSynthesis();
       _state = MidiPlayerState.paused;
       _isPlaying = false;
-      _stopPositionTimer();
       notifyListeners();
       debugPrint('MIDI playback paused');
     } catch (e) {
@@ -150,9 +175,9 @@ class MidiService extends ChangeNotifier {
 
   Future<void> resume() async {
     try {
+      _synthesizer.resumeSynthesis();
       _state = MidiPlayerState.playing;
       _isPlaying = true;
-      _startPositionTimer();
       notifyListeners();
       debugPrint('MIDI playback resumed');
     } catch (e) {
@@ -162,12 +187,13 @@ class MidiService extends ChangeNotifier {
 
   Future<void> stop() async {
     try {
+      await _synthesizer.stopSynthesis();
       _position = Duration.zero;
       _currentMidiFile = null;
       _lastError = null;
       _state = MidiPlayerState.stopped;
       _isPlaying = false;
-      _stopPositionTimer();
+      _currentSequence = null;
       notifyListeners();
       debugPrint('MIDI playback stopped');
     } catch (e) {
@@ -177,6 +203,8 @@ class MidiService extends ChangeNotifier {
 
   Future<void> seekTo(Duration position) async {
     try {
+      final timeSeconds = position.inMilliseconds / 1000.0;
+      _synthesizer.seekTo(timeSeconds);
       _position = position;
       notifyListeners();
       debugPrint('MIDI playback seeked to: ${position.inSeconds} seconds');
@@ -187,10 +215,32 @@ class MidiService extends ChangeNotifier {
 
   Future<void> setVolume(double volume) async {
     try {
-      // In a real implementation, you would set the volume here
+      // Set volume for all voices
+      _synthesizer.setVoiceVolume('Soprano', volume);
+      _synthesizer.setVoiceVolume('Alto', volume);
+      _synthesizer.setVoiceVolume('Tenor', volume);
+      _synthesizer.setVoiceVolume('Bass', volume);
       debugPrint('MIDI volume set to: ${(volume * 100).toInt()}%');
     } catch (e) {
       debugPrint('Error setting volume: $e');
+    }
+  }
+
+  Future<void> setVoiceVolume(String voiceName, double volume) async {
+    try {
+      _synthesizer.setVoiceVolume(voiceName, volume);
+      debugPrint('Voice $voiceName volume set to: ${(volume * 100).toInt()}%');
+    } catch (e) {
+      debugPrint('Error setting voice volume: $e');
+    }
+  }
+
+  Future<void> toggleVoiceMute(String voiceName) async {
+    try {
+      _synthesizer.toggleVoiceMute(voiceName);
+      debugPrint('Voice $voiceName mute toggled');
+    } catch (e) {
+      debugPrint('Error toggling voice mute: $e');
     }
   }
 
@@ -204,24 +254,14 @@ class MidiService extends ChangeNotifier {
     }
   }
 
-  void _startPositionTimer() {
-    _stopPositionTimer();
-    _positionTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (_state == MidiPlayerState.playing) {
-        _position = _position + const Duration(milliseconds: 100);
-        if (_position >= _duration) {
-          _state = MidiPlayerState.stopped;
-          _isPlaying = false;
-          _stopPositionTimer();
-        }
-        notifyListeners();
-      }
-    });
+  // Get currently active notes for visualization
+  Map<String, List<MIDINote>> getCurrentActiveNotes() {
+    return _currentActiveNotes;
   }
 
-  void _stopPositionTimer() {
-    _positionTimer?.cancel();
-    _positionTimer = null;
+  // Check if a specific voice is currently playing
+  bool isVoicePlaying(String voiceName) {
+    return _synthesizer.isVoicePlaying(voiceName);
   }
 
   String getTrackDisplayName(VoiceTrack track) {
@@ -261,7 +301,8 @@ class MidiService extends ChangeNotifier {
 
   @override
   void dispose() {
-    _stopPositionTimer();
+    _synthesizer.removeListener(_onSynthesizerChanged);
+    _synthesizer.dispose();
     super.dispose();
   }
 }

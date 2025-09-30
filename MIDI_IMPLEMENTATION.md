@@ -1,160 +1,231 @@
-# MIDI Implementation with Voice Splitting
+# Flutter MIDI Four-Voice Player Development Prompt
 
-## Overview
-Successfully implemented MIDI playback functionality with voice splitting and selection capabilities, replacing the previous audio system. Users can now play MIDI files and select individual voice tracks (soprano, alto, tenor, bass) or play all voices together.
+## Project Objective
 
-## Key Features Implemented
+Create a Flutter mobile application that parses .mid files, extracts and sequences the various MIDI channels, partitions the first 4 channels into SATB (Soprano, Alto, Tenor, Bass) voices, and provides individual playback control for each voice.
 
-### 1. MIDI Service (`lib/core/services/midi_service.dart`)
-- **Audio Playback**: Uses `just_audio` package for reliable MIDI file playback
-- **Voice Track Selection**: Supports individual voice tracks (soprano, alto, tenor, bass) and all voices
-- **State Management**: Tracks playing state, position, duration, and current track
-- **Audio Controls**: Play, pause, resume, stop, seek, volume control, and loop functionality
-- **Real-time Updates**: Position timer for smooth progress updates
+## Core Requirements
 
-### 2. MIDI BLoC (`lib/features/midi/bloc/midi_bloc.dart`)
-- **State Management**: Wraps the MIDI service with ChangeNotifier pattern
-- **Provider Integration**: Integrates with the app's provider system
-- **Event Handling**: Manages all MIDI playback events and state changes
+### 1. MIDI File Processing
 
-### 3. MIDI Player Widget (`lib/shared/widgets/midi_player_widget.dart`)
-- **Voice Selection**: Interactive buttons for each voice track with icons
-- **Progress Bar**: Real-time progress display with seek functionality
-- **Control Buttons**: Play/pause, stop, and voice-specific controls
-- **Visual Feedback**: Active state highlighting for current track
-- **Responsive Design**: Adapts to different screen sizes
+- **Parse .mid files** using a Flutter-compatible MIDI parsing library
+- **Extract all available channels** from the MIDI file (0-15)
+- **Sequence events** chronologically with precise timing
+- **Separate the first 4 channels** and map them to:
+  - Channel 0 → Soprano
+  - Channel 1 → Alto
+  - Channel 2 → Tenor
+  - Channel 3 → Bass
+- **Handle edge cases** where fewer than 4 channels exist
 
-### 4. Enhanced Hymn Detail Screen (`lib/presentation/screens/hymn_detail_screen.dart`)
-- **Comprehensive Display**: Shows hymn number, title, author, composer, style
-- **MIDI Integration**: Embedded MIDI player with voice selection
-- **Lyrics Display**: Full lyrics with proper formatting
-- **Modern UI**: Gradient headers, cards, and responsive layout
+### 2. Data Structure Design
 
-## Voice Track System
+Create data models for:
 
-### Available Voice Tracks
-1. **All Voices** (🎵): Plays the complete MIDI file with all voices
-2. **Soprano** (🎤): Plays only the soprano voice track
-3. **Alto** (🎼): Plays only the alto voice track
-4. **Tenor** (🎹): Plays only the tenor voice track
-5. **Bass** (🎸): Plays only the bass voice track
+```dart
+class MIDIVoice {
+  String name; // "Soprano", "Alto", "Tenor", "Bass"
+  int channelNumber;
+  List<MIDINote> notes;
+  Color displayColor;
+  bool isMuted;
+  double volume;
+}
 
-### Voice Selection Features
-- **Visual Indicators**: Each voice has a unique icon and color coding
-- **Active State**: Currently playing voice is highlighted
-- **Quick Switching**: Tap any voice button to switch tracks instantly
-- **Progress Tracking**: All voices share the same progress bar
+class MIDINote {
+  int noteNumber; // 0-127 MIDI note number
+  String noteName; // "C4", "F#3", etc.
+  double startTime; // in seconds
+  double duration; // in seconds
+  int velocity; // 0-127
+}
 
-## Technical Implementation
+class MIDISequence {
+  List<MIDIVoice> voices;
+  double totalDuration;
+  int ticksPerQuarter;
+  double tempo; // BPM
+}
+```
 
-### Dependencies Added
+### 3. Audio Synthesis & Playback
+
+- **Individual voice control**: Each voice can be played/paused/muted independently
+- **Real-time synthesis**: Generate audio for each voice using different timbres
+- **Synchronization**: All voices stay in sync when playing together
+- **Volume control**: Individual volume sliders for each voice
+- **Tempo control**: Global playback speed adjustment
+
+### 4. User Interface Components
+
+- **File picker** for selecting .mid files from device storage
+- **Four-voice display** with visual note representation
+- **Transport controls**: Play, Pause, Stop, Seek
+- **Voice controls**: Individual mute/unmute, volume sliders
+- **Timeline visualization** showing notes for each voice
+- **Current playback position** indicator
+
+### 5. Technical Implementation Details
+
+#### Required Dependencies
+
 ```yaml
 dependencies:
-  just_audio: ^0.9.36
-  audio_session: ^0.1.18
+  flutter:
+    sdk: flutter
+  dart_midi: ^1.0.0 # For MIDI file parsing
+  flutter_sound: ^9.2.13 # For audio playback/synthesis
+  file_picker: ^5.2.5 # For file selection
+  provider: ^6.0.5 # For state management
 ```
 
-### File Structure
+#### Key Classes to Implement
+
+1. **MIDIParser**: Parse .mid files and extract channel data
+2. **VoiceSequencer**: Convert MIDI events to timed note sequences
+3. **AudioSynthesizer**: Generate audio for each voice
+4. **PlaybackController**: Manage synchronized playback
+5. **VoiceVisualization**: Display notes on timeline
+
+### 6. Detailed Implementation Steps
+
+#### Step 1: MIDI File Parsing
+
+```dart
+class MIDIParser {
+  static Future<MIDISequence> parseMIDIFile(String filePath) async {
+    // Parse .mid file using dart_midi
+    // Extract channels 0-3
+    // Convert MIDI events to MIDINote objects
+    // Calculate precise timing in seconds
+    // Return structured MIDISequence
+  }
+}
 ```
-lib/
-├── core/services/
-│   └── midi_service.dart          # Core MIDI playback logic
-├── features/midi/bloc/
-│   └── midi_bloc.dart             # MIDI state management
-├── shared/widgets/
-│   └── midi_player_widget.dart    # MIDI player UI component
-└── presentation/screens/
-    └── hymn_detail_screen.dart    # Enhanced hymn detail view
+
+#### Step 2: Audio Synthesis Setup
+
+```dart
+class VoiceSynthesizer {
+  late List<FlutterSoundPlayer> voicePlayers;
+
+  Future<void> initializeSynthesizers() async {
+    // Create 4 different synthesizer instances
+    // Assign different timbres: sine, triangle, square, sawtooth
+    // Set up individual volume controls
+  }
+
+  Future<void> playVoice(int voiceIndex, MIDINote note) async {
+    // Convert MIDI note number to frequency
+    // Trigger note with correct timing and duration
+  }
+}
 ```
 
-### MIDI File Naming Convention
-- **Format**: `h{number}.mid` (e.g., `h1.mid`, `h654.mid`)
-- **Location**: `assets/midi/` directory
-- **Compatibility**: Standard MIDI format with multiple tracks
+#### Step 3: Synchronized Playback
 
-## User Experience
+```dart
+class PlaybackController extends ChangeNotifier {
+  Timer? playbackTimer;
+  double currentTime = 0.0;
+  bool isPlaying = false;
 
-### Navigation Flow
-1. **Home Screen**: Browse and search through 654 hymns
-2. **Hymn Card Tap**: Navigate to detailed hymn view
-3. **Hymn Detail Screen**: View lyrics, metadata, and MIDI controls
-4. **Voice Selection**: Choose specific voice or all voices
-5. **Playback Control**: Play, pause, stop, and seek through the music
+  Future<void> play() async {
+    // Start synchronized playback of all unmuted voices
+    // Update currentTime regularly for UI updates
+    // Schedule note events with precise timing
+  }
 
-### Interactive Features
-- **Real-time Progress**: Visual progress bar with time display
-- **Voice Switching**: Instant switching between voice tracks
-- **Seek Functionality**: Drag progress bar to jump to specific time
-- **Visual Feedback**: Active states and loading indicators
-- **Error Handling**: Graceful error messages for missing files
+  void seekTo(double timeSeconds) {
+    // Jump to specific time position
+    // Update all voice players accordingly
+  }
+}
+```
 
-## Benefits of MIDI Implementation
+#### Step 4: Voice Visualization Widget
 
-### 1. **Voice Separation**
-- Individual voice tracks for learning and practice
-- Better understanding of musical structure
-- Support for different skill levels
+```dart
+class VoiceTimelineWidget extends StatelessWidget {
+  final MIDIVoice voice;
+  final double currentTime;
+  final double totalDuration;
 
-### 2. **File Efficiency**
-- MIDI files are much smaller than audio files
-- Faster loading and streaming
-- Reduced app size and bandwidth usage
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: VoiceTimelinePainter(
+        voice: voice,
+        currentTime: currentTime,
+        totalDuration: totalDuration,
+      ),
+    );
+  }
+}
+```
 
-### 3. **Educational Value**
-- Visual representation of musical structure
-- Ability to isolate specific voice parts
-- Better for music education and practice
+### 7. Advanced Features to Include
 
-### 4. **Performance**
-- Smooth playback on all devices
-- Low memory usage
-- Fast track switching
+#### Musical Intelligence
 
-## Future Enhancements
+- **Note name conversion**: MIDI numbers to musical notation (C4, F#3, etc.)
+- **Key signature detection**: Identify the key of the piece
+- **Chord analysis**: Show harmony when voices play together
+- **Tempo change handling**: Support for variable tempo throughout piece
 
-### Planned Features
-1. **MIDI Visualization**: Sheet music or piano roll display
-2. **Tempo Control**: Adjustable playback speed
-3. **Transposition**: Key transposition for different vocal ranges
-4. **Recording**: Voice recording and playback comparison
-5. **Playlists**: Create custom hymn playlists
-6. **Offline Support**: Download MIDI files for offline use
+#### User Experience Enhancements
 
-### Technical Improvements
-1. **Advanced MIDI Parsing**: Extract individual voice data
-2. **Custom Soundfonts**: Different instrument sounds
-3. **Synchronization**: Lyrics highlighting with music
-4. **Analytics**: Track usage and learning progress
+- **Waveform visualization**: Show audio waveform for each voice
+- **Note highlighting**: Highlight currently playing notes
+- **Loop sections**: Allow looping specific measures
+- **Export functionality**: Save individual voices as separate audio files
 
-## Testing and Validation
+#### Performance Optimizations
 
-### Current Status
-- ✅ **654 Hymns**: All hymns converted and accessible
-- ✅ **MIDI Playback**: Basic playback functionality working
-- ✅ **Voice Selection**: UI implemented and functional
-- ✅ **Navigation**: Complete flow from home to detail screen
-- ✅ **Error Handling**: Graceful handling of missing files
-- ✅ **UI/UX**: Modern, responsive design
+- **Lazy loading**: Load only visible portion of long pieces
+- **Background processing**: Parse MIDI files without blocking UI
+- **Memory management**: Efficiently handle large MIDI files
+- **Audio buffering**: Smooth playback without glitches
 
-### Next Steps
-1. **MIDI File Testing**: Verify all 654 MIDI files are properly formatted
-2. **Voice Track Validation**: Ensure individual voice tracks are accessible
-3. **Performance Testing**: Test on various devices and screen sizes
-4. **User Testing**: Gather feedback on voice selection and playback
+### 8. Error Handling & Edge Cases
 
-## Conclusion
+- **Invalid MIDI files**: Graceful error messages
+- **Missing channels**: Handle files with fewer than 4 channels
+- **Large files**: Progress indicators for parsing
+- **Audio permissions**: Request microphone/audio permissions properly
+- **Platform differences**: iOS vs Android audio handling
 
-The MIDI implementation successfully replaces the previous audio system with a more sophisticated and educational approach. The voice splitting feature allows users to:
+### 9. Testing Strategy
 
-- **Learn Individual Parts**: Practice specific voice tracks
-- **Understand Harmony**: See how different voices work together
-- **Improve Musical Skills**: Focus on specific vocal ranges
-- **Enjoy Flexibility**: Choose between full ensemble or individual voices
+- **Unit tests**: MIDI parsing accuracy
+- **Integration tests**: Audio synthesis functionality
+- **Widget tests**: UI component behavior
+- **Performance tests**: Large file handling
+- **Device tests**: Multiple Android/iOS devices
 
-This implementation provides a solid foundation for a comprehensive hymn learning and worship application, with room for future enhancements and educational features.
+### 10. Deliverables
 
----
-*Implementation Date: December 2024*
-*Total Hymns: 654*
-*Voice Tracks: 5 (All, Soprano, Alto, Tenor, Bass)*
-*MIDI Files: assets/midi/h1.mid to h654.mid*
+1. **Complete Flutter project** with all source code
+2. **Detailed documentation** explaining the architecture
+3. **Example .mid files** for testing
+4. **User manual** with screenshots
+5. **Performance benchmarks** and optimization notes
+
+## Success Criteria
+
+- Successfully parse and display any standard .mid file
+- Independently control playback of 4 separate voices
+- Smooth, synchronized audio playback on mobile devices
+- Intuitive UI that musicians can use effectively
+- Stable performance with files up to 10MB
+- Works on both iOS and Android platforms
+
+## Optional Enhancements
+
+- **MIDI recording**: Record new MIDI sequences
+- **Voice editing**: Modify individual notes
+- **Sharing functionality**: Share arrangements with others
+- **Cloud storage**: Save/load from cloud services
+- **Multiple file support**: Handle multiple MIDI files in a playlist
+
+This prompt should provide a comprehensive roadmap for developing your Flutter MIDI four-voice player application.

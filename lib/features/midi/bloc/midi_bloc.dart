@@ -71,6 +71,23 @@ class MidiBloc extends ChangeNotifier {
     return _midiService.getTrackIcon(track);
   }
 
+  // New methods for voice control
+  Future<void> setVoiceVolume(String voiceName, double volume) async {
+    await _midiService.setVoiceVolume(voiceName, volume);
+  }
+
+  Future<void> toggleVoiceMute(String voiceName) async {
+    await _midiService.toggleVoiceMute(voiceName);
+  }
+
+  Map<String, List<dynamic>> getCurrentActiveNotes() {
+    return _midiService.getCurrentActiveNotes();
+  }
+
+  bool isVoicePlaying(String voiceName) {
+    return _midiService.isVoicePlaying(voiceName);
+  }
+
   @override
   void dispose() {
     _midiService.removeListener(_onMidiServiceChanged);

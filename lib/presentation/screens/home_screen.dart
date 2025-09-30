@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../core/models/hymn.dart';
 import '../../core/services/hymn_data_service.dart';
@@ -65,33 +66,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
-          'Hymnes',
-          style: TextStyle(
+        title: Text(
+          l10n.appTitle,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: AppColors.surface,
+        surfaceTintColor: AppColors.surface,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // TODO: Implement advanced search
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.favorite),
-            onPressed: () {
-              // TODO: Navigate to favorites
-            },
-          ),
-        ],
+        automaticallyImplyLeading: true,
+        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -101,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search hymns...',
+                hintText: l10n.searchHymns,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -131,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               children: [
                 Text(
-                  '${_filteredHymns.length} hymns found',
+                  l10n.hymnsFound(_filteredHymns.length),
                   style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 14,
@@ -143,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {
                       _searchController.clear();
                     },
-                    child: const Text('Clear'),
+                    child: Text(l10n.clear),
                   ),
               ],
             ),
@@ -164,8 +155,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 16),
                         Text(
                           _searchController.text.isEmpty
-                              ? 'No hymns available'
-                              : 'No hymns found',
+                              ? l10n.noHymnsAvailable
+                              : l10n.noHymnsFound,
                           style: const TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 18,

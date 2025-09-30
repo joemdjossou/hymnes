@@ -246,6 +246,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
+  file_picker:
+    dependency: "direct main"
+    description:
+      name: file_picker
+      sha256: be325344c1f3070354a1d84a231a1ba75ea85d413774ec4bdf444c023342e030
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.5.0"
   fixnum:
     dependency: transitive
     description:
@@ -283,6 +291,43 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  flutter_localizations:
+    dependency: "direct main"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      sha256: b0694b7fb1689b0e6cc193b3f1fcac6423c4f93c74fb20b806c6b6f196db0c31
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.30"
+  flutter_sound:
+    dependency: "direct main"
+    description:
+      name: flutter_sound
+      sha256: ef89477f6e8ce2fa395158ebc4a8b11982e3ada440b4021c06fd97a4e771554b
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.28.0"
+  flutter_sound_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_sound_platform_interface
+      sha256: "3394d7e664a09796818014ff85a81db0dec397f4c286cbe52f8783886fa5a497"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.28.0"
+  flutter_sound_web:
+    dependency: transitive
+    description:
+      name: flutter_sound_web
+      sha256: "4e10c94a8574bd93bb8668af59bf76f5312a890bccd3778d73168a7133217dc5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.28.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -381,14 +426,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.5.2"
-  intro_slider:
+  intl:
     dependency: "direct main"
     description:
-      name: intro_slider
-      sha256: eb43fefa27b0655edebc3e7fe7ff320cb5996a4e64649d79969c7099105fe52f
+      name: intl
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.1"
+    version: "0.19.0"
   io:
     dependency: transitive
     description:
@@ -469,6 +514,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  logger:
+    dependency: transitive
+    description:
+      name: logger
+      sha256: "55d6c23a6c15db14920e037fe7e0dc32e7cdaf3b64b4b25df2d541b5b6b81c0c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.1"
   logging:
     dependency: transitive
     description:
@@ -630,7 +683,7 @@ packages:
     source: hosted
     version: "6.0.1"
   provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: provider
       sha256: c8a055ee5ce3fd98d6fc872478b03823ffdb448699c6ebdbbc71d59b596fd48c
@@ -906,6 +959,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
+  win32:
+    dependency: transitive
+    description:
+      name: win32
+      sha256: "329edf97fdd893e0f1e3b9e88d6a0e627128cc17cc316a8d67fda8f1451178ba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.13.0"
   xdg_directories:
     dependency: transitive
     description:
@@ -932,4 +993,4 @@ packages:
     version: "3.1.3"
 sdks:
   dart: ">=3.7.0 <4.0.0"
-  flutter: ">=3.22.0"
+  flutter: ">=3.29.0"

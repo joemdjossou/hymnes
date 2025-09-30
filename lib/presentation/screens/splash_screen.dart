@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../shared/constants/app_colors.dart';
-import '../screens/home_screen.dart';
+import 'main_navigation_screen.dart';
+import 'onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -57,9 +60,34 @@ class _SplashScreenState extends State<SplashScreen>
 
     await Future.delayed(const Duration(milliseconds: 2000));
     if (mounted) {
+      await _navigateToNextScreen();
+    }
+  }
+
+  Future<void> _navigateToNextScreen() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final isOnboardingComplete =
+          prefs.getBool('onboarding_complete') ?? false;
+
+      if (isOnboardingComplete) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const MainNavigationScreen(),
+          ),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const OnboardingScreen(),
+          ),
+        );
+      }
+    } catch (e) {
+      // If there's an error, default to onboarding
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => const OnboardingScreen(),
         ),
       );
     }
@@ -74,6 +102,8 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -112,9 +142,9 @@ class _SplashScreenState extends State<SplashScreen>
                   const SizedBox(height: 32),
 
                   // App Title
-                  const Text(
-                    'Hymnes',
-                    style: TextStyle(
+                  Text(
+                    l10n.appTitle,
+                    style: const TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -126,7 +156,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                   // App Subtitle
                   Text(
-                    'Hymnes et Louanges Adventistes',
+                    l10n.appSubtitle,
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white.withValues(alpha: 0.8),
@@ -146,11 +176,7 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
 
-                  // Loading indicator
-                  const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    strokeWidth: 3,
-                  ),
+                  // Progress bar
                 ],
               ),
             ),
