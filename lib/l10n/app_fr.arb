@@ -105,5 +105,34 @@
   "soprano": "Soprano",
   "alto": "Alto",
   "tenor": "Ténor",
-  "bass": "Basse"
+  "bass": "Basse",
+  "musicSheet": "Partition Musicale",
+  "viewMusicSheet": "Voir la partition (PDF)",
+  "viewMusicSheets": "Voir {count} partitions (PDF)",
+  "@viewMusicSheets": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checkingAvailability": "Vérification de la disponibilité...",
+  "errorCheckingMusicSheets": "Erreur lors de la vérification des partitions",
+  "noMusicSheetsAvailable": "Aucune partition disponible",
+  "loadingMusicSheet": "Chargement de la partition...",
+  "unableToDisplayPdf": "Impossible d'afficher le PDF",
+  "webViewFailedToLoad": "Échec du chargement de la WebView",
+  "pdfLoadingTimeout": "Délai d'attente du chargement PDF. Appuyez pour ouvrir dans le navigateur.",
+  "failedToLoadPdf": "Échec du chargement du PDF. Appuyez pour ouvrir dans le navigateur.",
+  "openInBrowser": "Ouvrir dans le Navigateur",
+  "retry": "Réessayer",
+  "cannotOpenPdfInBrowser": "Impossible d'ouvrir le PDF dans le navigateur",
+  "errorOpeningPdf": "Erreur lors de l'ouverture du PDF : {error}",
+  "@errorOpeningPdf": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

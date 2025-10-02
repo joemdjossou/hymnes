@@ -105,5 +105,34 @@
   "soprano": "Soprano",
   "alto": "Alto",
   "tenor": "Tenor",
-  "bass": "Bass"
+  "bass": "Bass",
+  "musicSheet": "Music Sheet",
+  "viewMusicSheet": "View music sheet (PDF)",
+  "viewMusicSheets": "View {count} music sheets (PDF)",
+  "@viewMusicSheets": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checkingAvailability": "Checking availability...",
+  "errorCheckingMusicSheets": "Error checking music sheets",
+  "noMusicSheetsAvailable": "No music sheets available",
+  "loadingMusicSheet": "Loading music sheet...",
+  "unableToDisplayPdf": "Unable to display PDF",
+  "webViewFailedToLoad": "WebView failed to load",
+  "pdfLoadingTimeout": "PDF loading timeout. Tap to open in browser.",
+  "failedToLoadPdf": "Failed to load PDF. Tap to open in browser.",
+  "openInBrowser": "Open in Browser",
+  "retry": "Retry",
+  "cannotOpenPdfInBrowser": "Cannot open PDF in browser",
+  "errorOpeningPdf": "Error opening PDF: {error}",
+  "@errorOpeningPdf": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
